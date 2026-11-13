@@ -1,0 +1,78 @@
+<section class="product-details-page" aria-labelledby="product-details-title">
+  <button type="button" class="back-button" (click)="backToCatalog()">Back to catalog</button>
+
+  @if (state() === 'loading') {
+    <div class="details-skeleton" aria-label="Loading product details" aria-busy="true">
+      <div class="skeleton-gallery">
+        <div class="skeleton-main-image"></div>
+        <div class="skeleton-thumbnails">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+      <div class="skeleton-copy">
+        <div class="skeleton-label"></div>
+        <div class="skeleton-title"></div>
+        <div class="skeleton-status"></div>
+        <div class="skeleton-price"></div>
+        <div class="skeleton-description"></div>
+        <div class="skeleton-description short"></div>
+      </div>
+    </div>
+  } @else if (state() === 'not-found') {
+    <div class="details-state" role="status">
+      <h1 id="product-details-title">Product not found</h1>
+      <p>This product may be unavailable or no longer active.</p>
+    </div>
+  } @else if (state() === 'error') {
+    <div class="details-state" role="alert">
+      <h1 id="product-details-title">Product details could not be loaded</h1>
+      <p>Please check your connection and try again.</p>
+      <button type="button" class="secondary-button" (click)="retry()">Try again</button>
+    </div>
+  } @else if (product(); as productData) {
+    <div class="product-details">
+      <div class="product-gallery">
+        <div class="main-image">
+          <img [src]="activeImage()" [alt]="productData.nameEn" />
+        </div>
+
+        @if (thumbnails().length > 0) {
+          <div class="thumbnail-row" aria-label="Product images">
+            @for (thumbnail of thumbnails(); track $index) {
+              <button
+                type="button"
+                class="thumbnail"
+                [class.active]="activeImage() === thumbnail"
+                [attr.aria-label]="'Show product image ' + ($index + 1)"
+                [attr.aria-pressed]="activeImage() === thumbnail"
+                (click)="selectImage(thumbnail)"
+              >
+                <img [src]="thumbnail" [alt]="productData.nameEn + ' image ' + ($index + 1)" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="product-information">
+        <p class="product-category">
+          {{ productData.category.nameEn }} · {{ productData.brand.nameEn }}
+        </p>
+        <h1 id="product-details-title">{{ productData.nameEn }}</h1>
+
+        @if (productData.stockStatus === 'InStock') {
+          <span class="stock-status in-stock">In stock</span>
+        } @else {
+          <span class="stock-status out-of-stock">Out of stock</span>
+        }
+
+        <p class="product-price">{{ productData.price | number: '1.0-2' }} EGP</p>
+        <p class="product-description">
+          {{ productData.descriptionEn || 'No description available.' }}
+        </p>
+      </div>
+    </div>
+  }
+</section>

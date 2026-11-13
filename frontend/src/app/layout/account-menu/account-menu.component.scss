@@ -1,0 +1,141 @@
+:host {
+  position: relative;
+  display: inline-flex;
+}
+
+.account-menu {
+  position: relative;
+}
+
+.avatar-button {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.avatar {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #edf2ff;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.menu-panel {
+  position: absolute;
+  top: calc(100% + 0.65rem);
+  right: 0;
+  z-index: 20;
+  width: min(18rem, calc(100vw - 2rem));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 16px 34px rgba(23, 32, 51, 0.12);
+}
+
+.identity {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.identity-name {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.identity-email,
+.identity-loading,
+.menu-error {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.role-badge {
+  justify-self: start;
+  margin-top: 0.3rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: #edf2ff;
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.identity-loading,
+.menu-error {
+  padding: 1rem 1.1rem;
+}
+
+.menu-error {
+  color: #b42318;
+}
+
+.menu-links {
+  display: grid;
+  padding: 0.45rem;
+}
+
+.menu-links a,
+.logout-button {
+  padding: 0.75rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu-links a:hover,
+.logout-button:hover {
+  background: #f3f5fa;
+}
+
+.logout-button {
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  color: #b42318;
+}
+
+.guest-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+
+.guest-links a {
+  color: var(--muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.guest-links a.active {
+  color: var(--primary);
+}
+
+.guest-links .register-link {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  background: #edf2ff;
+  color: var(--primary);
+}

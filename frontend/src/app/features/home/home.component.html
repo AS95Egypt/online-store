@@ -1,0 +1,52 @@
+<section class="catalog" aria-labelledby="catalog-title">
+  <div class="catalog-heading">
+    <div>
+      <p class="eyebrow">Home Tech</p>
+      <h1 id="catalog-title">Products</h1>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="product-grid" aria-label="Loading products" aria-busy="true">
+      @for (skeleton of skeletonCards; track skeleton) {
+        <div class="product-skeleton">
+          <div class="skeleton-image"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-price"></div>
+          <div class="skeleton-status"></div>
+        </div>
+      }
+    </div>
+  } @else if (loadError()) {
+    <div class="catalog-state" role="alert">
+      <p>{{ loadError() }}</p>
+      <button type="button" class="secondary-button" (click)="retry()">Try again</button>
+    </div>
+  } @else if (products().length === 0) {
+    <p class="catalog-state" role="status">No products found.</p>
+  } @else {
+    <div class="product-grid">
+      @for (product of products(); track product.id) {
+        <app-product-card [product]="product" />
+      }
+    </div>
+
+    @if (loadMoreError()) {
+      <div class="catalog-state" role="alert">
+        <p>{{ loadMoreError() }}</p>
+        <button type="button" class="secondary-button" (click)="retry()">Try again</button>
+      </div>
+    } @else if (hasMore()) {
+      <div class="pagination">
+        <button
+          type="button"
+          class="secondary-button"
+          [disabled]="isLoadingMore()"
+          (click)="loadMore()"
+        >
+          {{ isLoadingMore() ? 'Loading…' : 'Load more' }}
+        </button>
+      </div>
+    }
+  }
+</section>

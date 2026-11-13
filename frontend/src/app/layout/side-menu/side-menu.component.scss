@@ -1,0 +1,25 @@
+.side-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+  font-size: 0.9rem;
+}
+
+.side-menu a {
+  color: var(--muted);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.side-menu a.active {
+  color: var(--primary);
+}
+
+@media (max-width: 760px) {
+  .side-menu {
+    gap: 0.65rem;
+    overflow-x: auto;
+  }
+}

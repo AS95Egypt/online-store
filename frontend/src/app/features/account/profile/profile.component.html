@@ -1,0 +1,41 @@
+<section class="account-page">
+  <div class="account-card">
+    <p class="eyebrow">Account</p>
+    <h1>My Profile</h1>
+
+    @if (isLoading()) {
+      <p class="status-message" role="status">Loading your profile…</p>
+    } @else if (loadError()) {
+      <p class="error-message" role="alert">{{ loadError() }}</p>
+    } @else if (profile(); as profile) {
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <label for="profile-name">Name</label>
+        <input id="profile-name" type="text" formControlName="name" autocomplete="name" />
+        @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+          <p class="field-error">Name is required.</p>
+        } @else if (form.controls.name.touched && form.controls.name.hasError('maxlength')) {
+          <p class="field-error">Name must be 200 characters or fewer.</p>
+        }
+        @if (nameServerError()) {
+          <p class="field-error" role="alert">{{ nameServerError() }}</p>
+        }
+
+        <div class="read-only-field">
+          <span>Email</span>
+          <p>{{ profile.email }}</p>
+        </div>
+
+        @if (formError()) {
+          <p class="error-message" role="alert">{{ formError() }}</p>
+        }
+        @if (successMessage()) {
+          <p class="success-message" role="status">{{ successMessage() }}</p>
+        }
+
+        <button type="submit" class="primary-button" [disabled]="isSaving()">
+          {{ isSaving() ? 'Saving…' : 'Save changes' }}
+        </button>
+      </form>
+    }
+  </div>
+</section>

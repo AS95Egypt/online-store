@@ -1,0 +1,21 @@
+<a class="product-card" [routerLink]="['/products', product().id]">
+  <div class="product-image">
+    @if (product().primaryImageUrl) {
+      <img [src]="product().primaryImageUrl" [alt]="product().nameEn || product().nameAr" />
+    } @else {
+      <img src="/product-placeholder.svg" alt="" />
+    }
+  </div>
+
+  <div class="product-body">
+    <h2 [title]="product().nameEn || product().nameAr">
+      {{ product().nameEn || product().nameAr }}
+    </h2>
+    <p class="product-price">{{ product().price | number: '1.0-2' }} EGP</p>
+    @if (product().stockStatus === 'InStock' && product().qty > 0) {
+      <span class="stock-status in-stock">In stock</span>
+    } @else {
+      <span class="stock-status out-of-stock">Out of stock</span>
+    }
+  </div>
+</a>

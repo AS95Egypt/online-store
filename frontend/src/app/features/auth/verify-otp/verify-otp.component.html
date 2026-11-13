@@ -1,0 +1,22 @@
+<section class="auth-shell">
+  <div class="auth-card">
+    <p class="eyebrow">Secure access</p>
+    <h1>Verify your code</h1>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label>
+        <span>Enter the 4-digit code</span>
+        <input type="text" formControlName="otp" maxlength="4" placeholder="1234" />
+      </label>
+
+      <button type="submit" class="primary-button">Verify code</button>
+      @if (serverError) {
+        <p class="error-message">{{ serverError }}</p>
+      }
+    </form>
+
+    <div class="meta-links">
+      <a routerLink="/forgot-password">Request a new code</a>
+    </div>
+  </div>
+</section>

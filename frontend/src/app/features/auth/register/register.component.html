@@ -1,0 +1,42 @@
+<section class="auth-shell">
+  <div class="auth-card">
+    <p class="eyebrow">Create account</p>
+    <h1>Join Online Store</h1>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label>
+        <span>Full name</span>
+        <input type="text" formControlName="fullName" placeholder="Jane Doe" />
+      </label>
+
+      <label>
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="you@example.com" />
+      </label>
+
+      <label>
+        <span>Password</span>
+        <input type="password" formControlName="password" placeholder="At least 8 characters" />
+      </label>
+
+      <label>
+        <span>Confirm password</span>
+        <input type="password" formControlName="confirmPassword" placeholder="Repeat your password" />
+      </label>
+
+      @if (form.hasError('passwordMismatch') && form.touched) {
+        <p class="inline-error">Passwords do not match.</p>
+      }
+
+      <button type="submit" class="primary-button">Create account</button>
+      @if (serverError) {
+        <p class="error-message">{{ serverError }}</p>
+      }
+    </form>
+
+    <div class="meta-links">
+      <span>Already have an account?</span>
+      <a routerLink="/login">Log in</a>
+    </div>
+  </div>
+</section>

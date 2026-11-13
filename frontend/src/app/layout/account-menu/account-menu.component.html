@@ -1,0 +1,55 @@
+@if (isAuthenticated$ | async) {
+  <div class="account-menu">
+    <button
+      type="button"
+      class="avatar-button"
+      aria-label="Open account menu"
+      [attr.aria-expanded]="isOpen"
+      aria-controls="account-menu-panel"
+      (click)="toggleMenu()"
+    >
+      @if (currentUser$ | async; as currentUser) {
+        <span class="avatar">{{ avatarInitials(currentUser.name) }}</span>
+      } @else {
+        <span class="avatar" aria-hidden="true">?</span>
+      }
+    </button>
+
+    @if (isOpen) {
+      <section id="account-menu-panel" class="menu-panel" aria-label="Account menu">
+        @if (currentUser$ | async; as currentUser) {
+          <div class="identity">
+            <span class="identity-name">{{ currentUser.name }}</span>
+            <span class="identity-email">{{ currentUser.email }}</span>
+            @if (currentUser.role === 'ADMIN') {
+              <span class="role-badge">Admin</span>
+            }
+          </div>
+          @if (profileLoadError) {
+            <p class="menu-error" role="alert">{{ profileLoadError }}</p>
+          }
+        } @else if (profileLoadError) {
+          <p class="menu-error" role="status">{{ profileLoadError }}</p>
+        } @else {
+          <p class="identity-loading">Loading account…</p>
+        }
+
+        <nav class="menu-links" aria-label="Account">
+          <a routerLink="/profile" (click)="closeMenu()">👤 My Profile</a>
+          <a routerLink="/change-password" (click)="closeMenu()">🔒 Change Password</a>
+          @if (currentUser$ | async; as menuUser) {
+            @if (menuUser.role !== 'ADMIN') {
+              <a routerLink="/orders" (click)="closeMenu()">🧾 My Orders</a>
+            }
+          }
+          <button type="button" class="logout-button" (click)="logout()">↪️ Log out</button>
+        </nav>
+      </section>
+    }
+  </div>
+} @else {
+  <div class="guest-links">
+    <a routerLink="/login" routerLinkActive="active">Log in</a>
+    <a routerLink="/register" class="register-link">Create account</a>
+  </div>
+}

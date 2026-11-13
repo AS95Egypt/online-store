@@ -1,0 +1,33 @@
+<section class="auth-shell">
+  <div class="auth-card">
+    <p class="eyebrow">Welcome back</p>
+    <h1>Log In</h1>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label>
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="you@example.com" />
+      </label>
+
+      <label>
+        <span>Password</span>
+        <input type="password" formControlName="password" placeholder="••••••••" />
+      </label>
+
+      <button type="submit" class="primary-button">Log in</button>
+    </form>
+
+    <div class="meta-links">
+      <a routerLink="/forgot-password">Forgot password?</a>
+      <a routerLink="/register">Create an account</a>
+    </div>
+  </div>
+</section>
+
+<dialog #errorDialog class="error-dialog" aria-labelledby="login-error-title">
+  <div class="error-dialog__content">
+    <h2 id="login-error-title">Unable to log in</h2>
+    <p role="alert">{{ serverError }}</p>
+    <button type="button" class="primary-button" (click)="closeErrorDialog()">Close</button>
+  </div>
+</dialog>

@@ -1,0 +1,15 @@
+# Managed by squad-kit — do not edit this block
+.squad/secrets.yaml
+.squad/stories/**/attachments/
+.squad/.trash/
+.squad/.last-run.json
+.squad/.last-copy-prompt.md
+.squad/runs/
+# End squad-kit block
+node_modules/
+.angular/
+dist/
+bin/
+obj/
+.vs/
+.vscode/
