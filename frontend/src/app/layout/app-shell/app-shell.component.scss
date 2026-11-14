@@ -6,9 +6,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 5vw;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(12px);
+  background: var(--panel);
   border-bottom: 1px solid var(--line);
+  transition: background-color 140ms ease, backdrop-filter 140ms ease;
+}
+
+.topbar.scrolled {
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(12px);
 }
 
 .brand-wrap {
@@ -29,6 +34,60 @@
   align-items: center;
   gap: 1rem;
   font-size: 0.95rem;
+}
+
+.search-form {
+  display: flex;
+  flex: 1 1 32rem;
+  align-items: center;
+  max-width: 42rem;
+  min-width: 12rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.search-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.75rem 0.9rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+}
+
+.search-form:focus-within {
+  border-color: var(--primary);
+}
+
+.search-button,
+.clear-search {
+  flex: 0 0 auto;
+  min-height: 2.7rem;
+  padding: 0 0.9rem;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clear-search {
+  padding-inline: 0.5rem;
+  color: var(--muted);
+  font-size: 1.3rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
 }
 
 .nav a,
@@ -57,4 +116,26 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 3rem 5vw 5rem;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 0.8rem 1rem;
+    padding: 0.75rem 5vw;
+  }
+
+  .search-form {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .nav {
+    margin-left: auto;
+  }
+
+  .page-shell {
+    padding-top: 1.5rem;
+  }
 }

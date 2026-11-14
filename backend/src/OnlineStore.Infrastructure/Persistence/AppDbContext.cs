@@ -75,6 +75,7 @@ public class AppDbContext : DbContext
             entity.Property(x => x.NameAr).HasMaxLength(200).IsRequired();
             entity.Property(x => x.NameEn).HasMaxLength(200).IsRequired();
             entity.Property(x => x.DisplayImageUrl).HasMaxLength(2048);
+            entity.Property(x => x.IsActive).HasDefaultValue(true).IsRequired();
             entity.HasIndex(x => x.NameEn).IsUnique();
         });
 

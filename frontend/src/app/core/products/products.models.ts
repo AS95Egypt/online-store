@@ -42,6 +42,23 @@ export interface ProductDetails {
   category: CategorySummary;
 }
 
+export interface ProductListFilters {
+  search?: string;
+  categoryId?: string;
+  brandIds?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  stockStatus?: string;
+  sort?: string;
+}
+
+export interface ProductFilterValues {
+  brandIds: number[];
+  minPrice: string;
+  maxPrice: string;
+  stockStatus: '' | 'InStock' | 'OutOfStock';
+}
+
 export interface ProductPageMeta {
   total: number;
   page: number;

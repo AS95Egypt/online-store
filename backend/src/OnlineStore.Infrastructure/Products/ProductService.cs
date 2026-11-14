@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OnlineStore.Domain.Entities;
 using OnlineStore.Application.Products;
 using OnlineStore.Infrastructure.Persistence;
 
@@ -14,10 +15,11 @@ public class ProductService : IProductService
     }
 
     public async Task<PagedResult<ProductListItemDto>> GetActiveProductsAsync(
-        int page,
-        int pageSize,
+        ProductListQuery query,
         CancellationToken cancellationToken)
     {
+        var page = query.Page;
+        var pageSize = query.PageSize;
         page = page < 1 ? ProductPaginationDefaults.Page : page;
         pageSize = pageSize < 1
             ? ProductPaginationDefaults.PageSize
@@ -27,12 +29,50 @@ public class ProductService : IProductService
             .AsNoTracking()
             .Where(product => product.IsActive);
 
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var term = query.Search.Trim().ToLowerInvariant();
+            activeProducts = activeProducts.Where(product =>
+                EF.Functions.Like(product.ItemNameEn.ToLower(), $"%{term}%") ||
+                EF.Functions.Like(product.ItemNameAr.ToLower(), $"%{term}%"));
+        }
+
+        if (query.CategoryId is { } categoryId)
+        {
+            activeProducts = activeProducts.Where(product => product.CategoryId == categoryId);
+        }
+
+        if (query.BrandIds is { Count: > 0 } brandIds)
+        {
+            activeProducts = activeProducts.Where(product => brandIds.Contains(product.BrandId));
+        }
+
+        if (query.MinPrice is { } minPrice)
+        {
+            activeProducts = activeProducts.Where(product => product.Price >= minPrice);
+        }
+
+        if (query.MaxPrice is { } maxPrice)
+        {
+            activeProducts = activeProducts.Where(product => product.Price <= maxPrice);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.StockStatus))
+        {
+            activeProducts = activeProducts.Where(product => product.StockStatus == query.StockStatus);
+        }
+
         var total = await activeProducts.CountAsync(cancellationToken);
         var skip = (int)Math.Min(((long)page - 1) * pageSize, int.MaxValue);
-        var items = await activeProducts
+        var orderedProducts = query.Sort switch
+        {
+            ProductSortOrder.PriceAsc => activeProducts.OrderBy(product => product.Price).ThenBy(product => product.Id),
+            ProductSortOrder.PriceDesc => activeProducts.OrderByDescending(product => product.Price).ThenBy(product => product.Id),
+            _ => activeProducts.OrderBy(product => product.Id),
+        };
+        var items = await orderedProducts
             .Include(product => product.Brand)
             .Include(product => product.Category)
-            .OrderBy(product => product.Id)
             .Skip(skip)
             .Take(pageSize)
             .Select(product => new ProductListItemDto(

@@ -1,7 +1,27 @@
-<header class="topbar">
+<header class="topbar" [class.scrolled]="isScrolled()">
   <div class="brand-wrap">
     <a routerLink="/" class="brand">⚡Home Tech</a>
   </div>
+
+  @if (isHomePage()) {
+    <form class="search-form" role="search" (ngSubmit)="submitSearch()">
+      <label class="visually-hidden" for="catalog-search">Search products</label>
+      <input
+        id="catalog-search"
+        type="search"
+        name="search"
+        placeholder="Search products by name…"
+        autocomplete="off"
+        [(ngModel)]="searchTerm"
+      />
+      @if (searchTerm) {
+        <button type="button" class="clear-search" aria-label="Clear search" (click)="clearSearch()">
+          ×
+        </button>
+      }
+      <button type="submit" class="search-button">Search</button>
+    </form>
+  }
 
   <nav class="nav" aria-label="Main navigation">
     <app-side-menu />

@@ -7,46 +7,101 @@
   </div>
 
   @if (isLoading()) {
-    <div class="product-grid" aria-label="Loading products" aria-busy="true">
-      @for (skeleton of skeletonCards; track skeleton) {
-        <div class="product-skeleton">
-          <div class="skeleton-image"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-price"></div>
-          <div class="skeleton-status"></div>
+    <div class="catalog-layout">
+      <div class="filter-placeholder" aria-hidden="true"></div>
+      <div class="catalog-results">
+        <div class="product-grid" aria-label="Loading products" aria-busy="true">
+          @for (skeleton of skeletonCards; track skeleton) {
+            <div class="product-skeleton">
+              <div class="skeleton-image"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-price"></div>
+              <div class="skeleton-status"></div>
+            </div>
+          }
         </div>
-      }
+      </div>
     </div>
   } @else if (loadError()) {
-    <div class="catalog-state" role="alert">
-      <p>{{ loadError() }}</p>
-      <button type="button" class="secondary-button" (click)="retry()">Try again</button>
+    <div class="catalog-layout">
+      <app-filter-panel
+        [brands]="brands()"
+        [brandsLoading]="isBrandsLoading()"
+        [filters]="filterValues()"
+        [brandsError]="brandsError()"
+        [isBusy]="isLoading() || isLoadingMore()"
+        (applyFilters)="applyFilters($event)"
+        (clearFilters)="clearFilters()"
+        (retryBrands)="retryBrands()"
+      />
+      <div class="catalog-results">
+        <div class="catalog-state" role="alert">
+          <p>{{ loadError() }}</p>
+          <button type="button" class="secondary-button" (click)="retry()">Try again</button>
+        </div>
+      </div>
     </div>
-  } @else if (products().length === 0) {
-    <p class="catalog-state" role="status">No products found.</p>
   } @else {
-    <div class="product-grid">
-      @for (product of products(); track product.id) {
-        <app-product-card [product]="product" />
-      }
-    </div>
+    <div class="catalog-layout">
+      <app-filter-panel
+        [brands]="brands()"
+        [brandsLoading]="isBrandsLoading()"
+        [filters]="filterValues()"
+        [brandsError]="brandsError()"
+        [isBusy]="isLoading() || isLoadingMore()"
+        (applyFilters)="applyFilters($event)"
+        (clearFilters)="clearFilters()"
+        (retryBrands)="retryBrands()"
+      />
 
-    @if (loadMoreError()) {
-      <div class="catalog-state" role="alert">
-        <p>{{ loadMoreError() }}</p>
-        <button type="button" class="secondary-button" (click)="retry()">Try again</button>
+      <div class="catalog-results">
+        <div class="results-toolbar">
+          <p class="results-count" aria-live="polite">
+            {{ pageMeta()?.total ?? 0 }} {{ pageMeta()?.total === 1 ? 'product' : 'products' }}
+            @if (hasActiveFilters()) {
+              <span>matching your selection</span>
+            }
+          </p>
+          <label class="sort-control">
+            <span>Sort by</span>
+            <select [value]="sort()" (change)="changeSortFromEvent($event)">
+              <option value="">No sorting</option>
+              <option value="priceAsc">Price: Low to High</option>
+              <option value="priceDesc">Price: High to Low</option>
+            </select>
+          </label>
+        </div>
+
+        @if (products().length === 0) {
+          <p class="catalog-state" role="status">
+            {{ hasActiveFilters() ? 'No products match your filters' : 'No products found.' }}
+          </p>
+        } @else {
+          <div class="product-grid">
+            @for (product of products(); track product.id) {
+              <app-product-card [product]="product" />
+            }
+          </div>
+        }
+
+        @if (loadMoreError()) {
+          <div class="catalog-state" role="alert">
+            <p>{{ loadMoreError() }}</p>
+            <button type="button" class="secondary-button" (click)="retry()">Try again</button>
+          </div>
+        } @else if (hasMore()) {
+          <div class="pagination">
+            <button
+              type="button"
+              class="secondary-button"
+              [disabled]="isLoadingMore()"
+              (click)="loadMore()"
+            >
+              {{ isLoadingMore() ? 'Loading…' : 'Load more' }}
+            </button>
+          </div>
+        }
       </div>
-    } @else if (hasMore()) {
-      <div class="pagination">
-        <button
-          type="button"
-          class="secondary-button"
-          [disabled]="isLoadingMore()"
-          (click)="loadMore()"
-        >
-          {{ isLoadingMore() ? 'Loading…' : 'Load more' }}
-        </button>
-      </div>
-    }
+    </div>
   }
 </section>

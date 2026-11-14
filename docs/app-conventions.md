@@ -75,6 +75,8 @@
 - Consistent success envelope where appropriate: `{ success: true, data, meta? }`.
 - Pagination on all list endpoints: `page` (1-based, default `1`) and `pageSize` (default `20`, maximum `100`). Invalid or non-positive values use the defaults; values above the maximum are capped.
 - Paginated success responses use `{ "success": true, "data": [...], "meta": { "total": 0, "page": 1, "pageSize": 20 } }`; `total` is the number of records matching the query before pagination.
+- Public catalog discovery uses optional `search`, `categoryId`, comma-separated `brandIds`, `minPrice`, `maxPrice`, `stockStatus` (`InStock` or `OutOfStock`), and `sort` (`priceAsc` or `priceDesc`) query parameters on `GET /api/products`. Filters compose with AND semantics and are applied in the database before counting and pagination. Invalid filter values return the standard error envelope.
+- Public `GET /api/categories` and `GET /api/brands` responses use `{ "success": true, "data": [...] }`. Categories expose an `IsActive` flag; existing categories default to active when the flag is introduced.
 - Authentication via `Authorization: Bearer` once introduced (A2).
 - API changes that break the frontend must be made in the same story/PR that updates the frontend.
 

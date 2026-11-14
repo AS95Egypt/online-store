@@ -1,0 +1,80 @@
+<details class="filter-panel" open>
+  <summary>Filters</summary>
+
+  <div class="filter-content">
+    <fieldset>
+      <legend>Price range (EGP)</legend>
+      <div class="price-fields">
+        <label>
+          <span>Minimum</span>
+          <input type="number" min="0" step="0.01" name="minPrice" [(ngModel)]="minPrice" />
+        </label>
+        <label>
+          <span>Maximum</span>
+          <input type="number" min="0" step="0.01" name="maxPrice" [(ngModel)]="maxPrice" />
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Brand</legend>
+      <input
+        class="brand-search"
+        type="search"
+        name="brandSearch"
+        placeholder="Find a brand"
+        aria-label="Find a brand"
+        [(ngModel)]="brandSearch"
+      />
+
+      @if (brandsError()) {
+        <p class="brand-error" role="alert">{{ brandsError() }}</p>
+        <button type="button" class="retry-brands" (click)="retryBrands.emit()">Try again</button>
+      } @else if (brandsLoading()) {
+        <p class="muted" role="status">Loading brands…</p>
+      } @else if (brands().length === 0) {
+        <p class="muted">No brands available.</p>
+      } @else {
+        <div class="brand-list">
+          @for (brand of visibleBrands(); track brand.id) {
+            <label class="check-option">
+              <input
+                type="checkbox"
+                [checked]="selectedBrandIds.includes(brand.id)"
+                (change)="toggleBrand(brand.id, $event)"
+              />
+              <span>{{ brand.nameEn }}</span>
+            </label>
+          } @empty {
+            <p class="muted">No matching brands.</p>
+          }
+        </div>
+      }
+    </fieldset>
+
+    <fieldset>
+      <legend>Availability</legend>
+      <label class="check-option">
+        <input type="radio" name="stockStatus" value="" [(ngModel)]="stockStatus" />
+        <span>Any availability</span>
+      </label>
+      <label class="check-option">
+        <input type="radio" name="stockStatus" value="InStock" [(ngModel)]="stockStatus" />
+        <span>In stock</span>
+      </label>
+      <label class="check-option">
+        <input type="radio" name="stockStatus" value="OutOfStock" [(ngModel)]="stockStatus" />
+        <span>Out of stock</span>
+      </label>
+    </fieldset>
+
+    <div class="filter-actions">
+      <button type="button" class="apply-button" [disabled]="isBusy()" (click)="apply()">
+        Apply
+      </button>
+      <button type="button" class="clear-button" [disabled]="isBusy()" (click)="clear()">
+        Clear filters
+      </button>
+    </div>
+  </div>
+</details>

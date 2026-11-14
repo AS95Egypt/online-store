@@ -3,8 +3,7 @@ namespace OnlineStore.Application.Products;
 public interface IProductService
 {
     Task<PagedResult<ProductListItemDto>> GetActiveProductsAsync(
-        int page,
-        int pageSize,
+        ProductListQuery query,
         CancellationToken cancellationToken);
 
     Task<ProductDetailsDto?> GetActiveProductByIdAsync(

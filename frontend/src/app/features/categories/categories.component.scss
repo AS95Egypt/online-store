@@ -1,0 +1,112 @@
+.categories-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.page-heading {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 1rem;
+}
+
+.category-card,
+.category-skeleton {
+  display: grid;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  text-align: left;
+}
+
+.category-card {
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+
+.category-card:hover,
+.category-card:focus-visible {
+  border-color: #c5cfdf;
+}
+
+.category-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.category-image,
+.skeleton-image {
+  display: grid;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  place-items: center;
+  background: var(--panel-soft);
+}
+
+.category-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.category-name {
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.skeleton-image {
+  background: var(--panel-soft);
+}
+
+.skeleton-name {
+  height: 0.9rem;
+  margin: 1rem;
+  border-radius: 4px;
+  background: var(--line);
+}
+
+.page-state {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.page-state p {
+  margin: 0;
+}
+
+.secondary-button {
+  padding: 0.75rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -1,0 +1,39 @@
+<section class="categories-page" aria-labelledby="categories-title">
+  <div class="page-heading">
+    <p class="eyebrow">Explore the store</p>
+    <h1 id="categories-title">Categories</h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="category-grid" aria-label="Loading categories" aria-busy="true">
+      @for (skeleton of [1, 2, 3, 4]; track skeleton) {
+        <div class="category-skeleton">
+          <div class="skeleton-image"></div>
+          <div class="skeleton-name"></div>
+        </div>
+      }
+    </div>
+  } @else if (loadError()) {
+    <div class="page-state" role="alert">
+      <p>{{ loadError() }}</p>
+      <button type="button" class="secondary-button" (click)="retry()">Try again</button>
+    </div>
+  } @else if (categories().length === 0) {
+    <p class="page-state" role="status">No categories are available.</p>
+  } @else {
+    <div class="category-grid">
+      @for (category of categories(); track category.id) {
+        <button type="button" class="category-card" (click)="openCategory(category)">
+          <span class="category-image">
+            @if (category.displayImageUrl) {
+              <img [src]="category.displayImageUrl" [alt]="category.nameEn" />
+            } @else {
+              <img src="/product-placeholder.svg" alt="" />
+            }
+          </span>
+          <span class="category-name">{{ category.nameEn }}</span>
+        </button>
+      }
+    </div>
+  }
+</section>

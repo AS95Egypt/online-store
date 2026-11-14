@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PagedResult, ProductDetails, ProductListItem } from './products.models';
+import { PagedResult, ProductDetails, ProductListFilters, ProductListItem } from './products.models';
 
 @Injectable({
   providedIn: 'root',
@@ -11,12 +11,31 @@ export class ProductsService {
   private readonly http = inject(HttpClient);
   private readonly productsUrl = `${environment.apiUrl}/products`;
 
-  getProducts(page: number, pageSize: number): Observable<PagedResult<ProductListItem>> {
+  getProducts(
+    page: number,
+    pageSize: number,
+    filters: ProductListFilters = {},
+  ): Observable<PagedResult<ProductListItem>> {
     const params = new HttpParams()
       .set('page', page)
       .set('pageSize', pageSize);
 
-    return this.http.get<PagedResult<ProductListItem>>(this.productsUrl, { params });
+    const filterParams: [string, string | undefined][] = [
+      ['search', filters.search],
+      ['categoryId', filters.categoryId],
+      ['brandIds', filters.brandIds],
+      ['minPrice', filters.minPrice],
+      ['maxPrice', filters.maxPrice],
+      ['stockStatus', filters.stockStatus],
+      ['sort', filters.sort],
+    ];
+    const filteredParams = filterParams.reduce(
+      (current, [key, value]) =>
+        value?.trim() ? current.set(key, value) : current,
+      params,
+    );
+
+    return this.http.get<PagedResult<ProductListItem>>(this.productsUrl, { params: filteredParams });
   }
 
   getProductById(id: number): Observable<ProductDetails> {

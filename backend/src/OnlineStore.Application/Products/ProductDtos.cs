@@ -28,6 +28,24 @@ public record ProductDetailsDto(
     BrandSummaryDto Brand,
     CategorySummaryDto Category);
 
+public enum ProductSortOrder
+{
+    None,
+    PriceAsc,
+    PriceDesc,
+}
+
+public record ProductListQuery(
+    int Page,
+    int PageSize,
+    string? Search,
+    int? CategoryId,
+    IReadOnlyList<int>? BrandIds,
+    decimal? MinPrice,
+    decimal? MaxPrice,
+    string? StockStatus,
+    ProductSortOrder Sort);
+
 public record BrandSummaryDto(int Id, string NameAr, string NameEn, string? DisplayImageUrl);
 
 public record CategorySummaryDto(int Id, string NameAr, string NameEn, string? DisplayImageUrl);

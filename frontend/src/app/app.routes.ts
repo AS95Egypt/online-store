@@ -6,6 +6,7 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'catalog', redirectTo: '', pathMatch: 'full' },
   { path: 'cart', loadComponent: () => import('./features/shared/placeholder-page.component').then((m) => m.PlaceholderPageComponent), data: { title: 'Cart', message: 'Your cart is coming soon.' } },
+  { path: 'categories', loadComponent: () => import('./features/categories/categories.component').then((m) => m.CategoriesComponent) },
   { path: 'products/:id', loadComponent: () => import('./features/product-details/product-details.component').then((m) => m.ProductDetailsComponent) },
   { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then((m) => m.RegisterComponent) },

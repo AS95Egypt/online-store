@@ -1,0 +1,147 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.filter-panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.filter-panel summary {
+  padding: 1rem;
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.filter-content {
+  display: grid;
+  gap: 1.25rem;
+  padding: 0 1rem 1rem;
+}
+
+fieldset {
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+legend {
+  margin-bottom: 0.65rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.price-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.price-fields label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.price-fields input,
+.brand-search {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.brand-list {
+  display: grid;
+  gap: 0.6rem;
+  max-height: 12rem;
+  overflow: auto;
+  padding: 0.2rem 0;
+}
+
+.check-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.check-option input {
+  accent-color: var(--primary);
+}
+
+.muted,
+.brand-error {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.brand-error {
+  color: var(--danger);
+}
+
+.retry-brands {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-actions {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.apply-button,
+.clear-button {
+  min-height: 2.7rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.apply-button {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--panel);
+}
+
+.clear-button {
+  background: var(--panel);
+  color: var(--text);
+}
+
+.apply-button:disabled,
+.clear-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+@media (min-width: 761px) {
+  .filter-panel summary {
+    list-style: none;
+    cursor: default;
+  }
+
+  .filter-panel summary::-webkit-details-marker {
+    display: none;
+  }
+}

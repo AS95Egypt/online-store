@@ -7,10 +7,14 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OnlineStore.Application.Auth;
+using OnlineStore.Application.Brands;
+using OnlineStore.Application.Categories;
 using OnlineStore.Application.Customers;
 using OnlineStore.Application.Products;
 using OnlineStore.Domain.Entities;
 using OnlineStore.Infrastructure.Auth;
+using OnlineStore.Infrastructure.Brands;
+using OnlineStore.Infrastructure.Categories;
 using OnlineStore.Infrastructure.Customers;
 using OnlineStore.Infrastructure.Products;
 using OnlineStore.Infrastructure.Persistence;
@@ -27,6 +31,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IBrandService, BrandService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 var jwtSecret = builder.Configuration["Jwt:Secret"];
