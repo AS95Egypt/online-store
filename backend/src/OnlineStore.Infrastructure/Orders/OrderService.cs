@@ -260,12 +260,41 @@ public sealed class OrderService : IOrderService
                 "This order can no longer be cancelled.");
         }
 
+        try
+        {
+            await CancelOrderCoreAsync(order, changedByUserId: null, cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw new OrderNotCancellableException(
+                "ORDER_NOT_PENDING",
+                "This order can no longer be cancelled.");
+        }
+
+        await transaction.CommitAsync(cancellationToken);
+        return await GetRequiredOrderDetailsAsync(userId, orderNumber, cancellationToken);
+    }
+
+    internal async Task CancelOrderCoreAsync(
+        Order order,
+        string? changedByUserId,
+        CancellationToken cancellationToken)
+    {
+        if (!OrderStatusWorkflow.CanCancel(order.Status))
+        {
+            throw new OrderNotCancellableException(
+                "ORDER_NOT_CANCELLABLE",
+                "This order can no longer be cancelled.");
+        }
+
         order.Status = OrderStatuses.Cancelled;
         order.StatusHistory.Add(new OrderStatusHistory
         {
             OrderId = order.Id,
             Status = OrderStatuses.Cancelled,
             ChangedAt = DateTime.UtcNow,
+            ChangedByUserId = changedByUserId,
         });
 
         foreach (var item in order.Items.OrderBy(item => item.ProductId))
@@ -285,24 +314,11 @@ public sealed class OrderService : IOrderService
             if (affectedRows != 1)
             {
                 throw new InvalidOperationException(
-                    $"Product {item.ProductId} for order {orderNumber} could not be found while restoring stock.");
+                    $"Product {item.ProductId} for order {order.OrderNumber} could not be found while restoring stock.");
             }
         }
 
-        try
-        {
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw new OrderNotCancellableException(
-                "ORDER_NOT_PENDING",
-                "This order can no longer be cancelled.");
-        }
-
-        await transaction.CommitAsync(cancellationToken);
-        return await GetRequiredOrderDetailsAsync(userId, orderNumber, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<OrderSummaryDto>> GetOrdersAsync(

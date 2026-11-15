@@ -1,0 +1,81 @@
+:host {
+  position: relative;
+  z-index: 20;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(15 23 42 / 45%);
+}
+
+.confirm-dialog {
+  width: min(100%, 28rem);
+  padding: 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 1.25rem 3rem rgb(15 23 42 / 20%);
+}
+
+.confirm-dialog h2 {
+  margin: 0 0 0.65rem;
+}
+
+.confirm-dialog p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.dialog-items {
+  display: grid;
+  gap: 0.4rem;
+  max-height: 10rem;
+  overflow: auto;
+  padding-left: 1.2rem;
+}
+
+.dialog-items span {
+  color: var(--muted);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+}
+
+.dialog-cancel,
+.dialog-confirm {
+  min-height: 2.5rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dialog-confirm {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+
+.dialog-confirm.danger {
+  border-color: var(--danger);
+  background: var(--danger);
+}
+
+.dialog-cancel:disabled,
+.dialog-confirm:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}

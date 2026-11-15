@@ -12,6 +12,7 @@ public class Order
     public byte[] RowVersion { get; set; } = Array.Empty<byte>();
     public string PaymentMethod { get; set; } = "COD";
     public string PaymentStatus { get; set; } = "Pending";
+    public DateTime? PaidAt { get; set; }
     public decimal Subtotal { get; set; }
     public decimal ShippingFee { get; set; }
     public decimal Total { get; set; }

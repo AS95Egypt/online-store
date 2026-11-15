@@ -45,7 +45,10 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IAdminShippingService, AdminShippingService>();
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<IOrderService>(services => services.GetRequiredService<OrderService>());
+builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
 
 var jwtSecret = builder.Configuration["Jwt:Secret"];
 if (string.IsNullOrWhiteSpace(jwtSecret))
@@ -134,3 +137,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program
+{
+}

@@ -190,6 +190,7 @@ public class AppDbContext : DbContext
             entity.Property(x => x.RowVersion).IsRowVersion();
             entity.Property(x => x.PaymentMethod).HasMaxLength(20).IsRequired();
             entity.Property(x => x.PaymentStatus).HasMaxLength(20).IsRequired();
+            entity.Property(x => x.PaidAt);
             entity.Property(x => x.Subtotal).HasPrecision(18, 2);
             entity.Property(x => x.ShippingFee).HasPrecision(18, 2);
             entity.Property(x => x.Total).HasPrecision(18, 2);
@@ -240,6 +241,7 @@ public class AppDbContext : DbContext
             entity.ToTable("OrderStatusHistory");
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Status).HasMaxLength(20).IsRequired();
+            entity.Property(x => x.ChangedByUserId).HasMaxLength(450);
             entity.HasOne(x => x.Order)
                 .WithMany(x => x.StatusHistory)
                 .HasForeignKey(x => x.OrderId)

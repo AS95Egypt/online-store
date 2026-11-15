@@ -7,4 +7,5 @@ public class OrderStatusHistory
     public Order Order { get; set; } = null!;
     public string Status { get; set; } = string.Empty;
     public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
+    public string? ChangedByUserId { get; set; }
 }

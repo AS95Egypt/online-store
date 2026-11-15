@@ -3,6 +3,8 @@
 @categoryId = 1
 @brandId = 1
 @productId = 1
+@orderId = 1
+@governorateId = 1
 
 ### Admin category list
 GET {{OnlineStore.Api_HostAddress}}/api/admin/categories
@@ -136,3 +138,63 @@ Content-Type: application/json
 {
   "isActive": false
 }
+
+### List admin orders
+GET {{OnlineStore.Api_HostAddress}}/api/admin/orders?status=Pending&page=1&pageSize=20&search=
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+### Get admin order details
+GET {{OnlineStore.Api_HostAddress}}/api/admin/orders/{{orderId}}
+Authorization: Bearer {{adminToken}}
+
+### Advance an order to its next status
+PATCH {{OnlineStore.Api_HostAddress}}/api/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "Confirmed"
+}
+
+### Invalid status transition (expected 409)
+PATCH {{OnlineStore.Api_HostAddress}}/api/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "Delivered"
+}
+
+### Cancel an eligible order
+POST {{OnlineStore.Api_HostAddress}}/api/admin/orders/{{orderId}}/cancel
+Authorization: Bearer {{adminToken}}
+
+### Mark an eligible COD order as paid
+POST {{OnlineStore.Api_HostAddress}}/api/admin/orders/{{orderId}}/payment/paid
+Authorization: Bearer {{adminToken}}
+
+### List governorates and shipping fees
+GET {{OnlineStore.Api_HostAddress}}/api/admin/shipping/governorates
+Authorization: Bearer {{adminToken}}
+
+### Update a governorate shipping fee
+PUT {{OnlineStore.Api_HostAddress}}/api/admin/shipping/governorates/{{governorateId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "shippingFee": 450.00
+}
+
+### Invalid negative shipping fee (expected 400)
+PUT {{OnlineStore.Api_HostAddress}}/api/admin/shipping/governorates/{{governorateId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "shippingFee": -1
+}
+
+### Public shipping options keep the existing response contract
+GET {{OnlineStore.Api_HostAddress}}/api/shipping/options

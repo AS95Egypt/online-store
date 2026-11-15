@@ -1,0 +1,129 @@
+.shipping-page {
+  display: grid;
+  gap: 1rem;
+  color: var(--text);
+}
+
+.shipping-heading h1,
+.shipping-heading p {
+  margin: 0;
+}
+
+.shipping-heading p {
+  margin-top: 0.35rem;
+  color: var(--muted);
+}
+
+.shipping-note,
+.shipping-state,
+.shipping-table-wrap {
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.shipping-note {
+  margin: 0;
+  background: var(--panel-soft);
+  color: var(--muted);
+}
+
+.shipping-state {
+  color: var(--muted);
+}
+
+.shipping-state p {
+  margin: 0 0 0.6rem;
+}
+
+.error-state,
+.field-error {
+  color: var(--danger);
+}
+
+.shipping-table-wrap {
+  overflow-x: auto;
+  padding: 0;
+}
+
+.shipping-table {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.shipping-table th,
+.shipping-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.shipping-table th {
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.shipping-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.fee-editor {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.fee-editor input {
+  width: min(100%, 12rem);
+  padding: 0.6rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+
+.fee-editor span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.field-error {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+}
+
+.shipping-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.shipping-button {
+  min-height: 2.4rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.shipping-button.primary {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+
+.shipping-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}

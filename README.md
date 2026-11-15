@@ -1,89 +1,230 @@
-# online-store
+# 🛍️ Online Store
 
-This repository contains a single-vendor online store where customers can browse products, add them to a cart, and complete an order checkout flow.
+A single-vendor online store for browsing products, managing a shopping cart, and placing Cash-on-Delivery orders. This repository includes both the customer storefront and administrator tools.
 
-## Repository layout
+| Application | Technology | Location |
+| --- | --- | --- |
+| Frontend | Angular, TypeScript | [`frontend/`](frontend/) |
+| Backend | ASP.NET Core Web API, Entity Framework Core, SQL Server | [`backend/`](backend/) |
 
-- `/frontend` — Angular application shell and future storefront UI.
-- `/backend` — ASP.NET Core Web API with layered .NET architecture.
-- `/docs` — shared project conventions and repo guidance.
-- `/.squad` — squad-kit planning and project tracking metadata.
+---
 
-## Prerequisites
+## 🚀 Features
 
-- Node.js LTS and npm
-- .NET SDK 8.0.423 (see `backend/global.json`)
-- SQL Server local instance or a Dockerized SQL Server instance for future persistence work
-- No live database is required to build or run the scaffolded app
+### Storefront
 
-## Backend setup, build, run, and test
+* 🛍️ Browse, search, filter, and sort products
+* 🗂️ View product categories and product details
+* 🛒 Add products to a cart and update quantities
+* 📦 Checkout with saved shipping details and governorate-based fees
+* 🧾 Place Cash-on-Delivery orders and view order history
+* 👤 Register, sign in, manage a profile, and change a password
+
+### Administration
+
+* 🔐 Customer and administrator roles with backend authorization
+* 🏷️ Manage categories, brands, and products
+* 📋 Search, filter, and manage orders through the status workflow
+* 💵 Confirm Cash-on-Delivery payments
+* 🚚 View and update governorate shipping fees
+
+### API
+
+* 🔑 JWT authentication and role-based authorization
+* 🗄️ SQL Server persistence with EF Core migrations
+* 📖 Swagger / OpenAPI documentation
+* ✅ Health endpoint at `GET /api/health`
+
+---
+
+## 🛠️ Technology Stack
+
+* **Frontend:** Angular 22, TypeScript, RxJS
+* **Backend:** ASP.NET Core Web API on .NET 8
+* **Data access:** Entity Framework Core and SQL Server
+* **Authentication:** JWT bearer tokens
+* **API documentation:** Swagger / OpenAPI
+* **Testing:** Vitest (frontend), xUnit and `WebApplicationFactory` (backend)
+
+---
+
+## ⚙️ Getting Started
+
+### Prerequisites
+
+Install the following:
+
+* [Node.js LTS](https://nodejs.org/) and npm
+* [.NET SDK 8.0.423](https://dotnet.microsoft.com/download/dotnet/8.0) (see [`backend/global.json`](backend/global.json))
+* SQL Server, such as SQL Server Express LocalDB or SQL Server Express
+* Git
+
+The default backend connection string uses the `.\SQLEXPRESS` instance. Configure a different SQL Server connection string before running the API if needed.
+
+---
+
+## 📥 Installation
+
+Clone the repository and enter its directory:
+
+```bash
+git clone https://github.com/AS95Egypt/online-store.git
+cd online-store
+```
+
+Restore and build the backend:
 
 ```bash
 cd backend
 dotnet restore
 dotnet build
-dotnet run --project src/OnlineStore.Api
-dotnet test
 ```
 
-The API exposes a health check at `GET /api/health` and returns a `200 OK` JSON payload with the application status.
+Install frontend dependencies:
 
-Local database tooling note: if you plan to work with EF Core migrations later, install the CLI once with:
+```bash
+cd ../frontend
+npm install
+```
+
+---
+
+## 🗄️ Backend Configuration
+
+### Database connection
+
+The API reads the connection string named `DefaultConnection`. It defaults to:
+
+```text
+Server=.\SQLEXPRESS;Database=OnlineStoreDb;Trusted_Connection=True;TrustServerCertificate=True;
+```
+
+Set a local connection string with .NET user-secrets from the `backend` directory:
+
+```bash
+cd backend
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=.\SQLEXPRESS;Database=OnlineStoreDb;Trusted_Connection=True;TrustServerCertificate=True;" --project src/OnlineStore.Api
+```
+
+### JWT settings
+
+The API requires `Jwt:Secret`. Set a sufficiently long, private value and the issuer/audience using user-secrets from the `backend` directory:
+
+```bash
+cd backend
+dotnet user-secrets set "Jwt:Secret" "replace-with-a-long-local-secret-value" --project src/OnlineStore.Api
+dotnet user-secrets set "Jwt:Issuer" "online-store-local" --project src/OnlineStore.Api
+dotnet user-secrets set "Jwt:Audience" "online-store-client" --project src/OnlineStore.Api
+```
+
+Never commit local secrets or production credentials.
+
+### Development administrator account
+
+When running in the `Development` environment, the API can seed an administrator if both settings are configured:
+
+```bash
+cd backend
+dotnet user-secrets set "Seed:AdminEmail" "admin@example.com" --project src/OnlineStore.Api
+dotnet user-secrets set "Seed:AdminPassword" "replace-with-a-strong-local-password" --project src/OnlineStore.Api
+```
+
+Public registration always creates a `CUSTOMER`; administrator accounts are not created through public registration.
+
+---
+
+## 🗃️ Database Migrations
+
+Install the EF Core command-line tool if needed:
 
 ```bash
 dotnet tool install --global dotnet-ef
 ```
 
-## Frontend setup, build, run, and test
-
-```bash
-cd frontend
-npm install
-npm run build
-npm start
-npm run test
-```
-
-The Angular app starts on the default development port and opens the public product catalog at the home route.
-
-## Authentication (local dev)
-
-Use local user secrets for JWT configuration before running the API:
+Apply migrations from the `backend` directory:
 
 ```bash
 cd backend
-dotnet user-secrets init --project src/OnlineStore.Api
-dotnet user-secrets set "Jwt:Secret" "replace-with-a-local-secret" --project src/OnlineStore.Api
-dotnet user-secrets set "Jwt:Issuer" "online-store-local" --project src/OnlineStore.Api
-dotnet user-secrets set "Jwt:Audience" "online-store-client" --project src/OnlineStore.Api
-dotnet user-secrets set "Jwt:ExpiryMinutes" "60" --project src/OnlineStore.Api
-```
-
-The auth flow uses ASP.NET Core password hashing with JWT. The initial EF Core migration creates two application tables: `Users` and `PasswordResetOtps`. EF Core also creates its internal `__EFMigrationsHistory` table to track applied migrations. `Users` stores the name, email, password hash, and role; roles are constrained to `ADMIN` or `CUSTOMER`, and public registration always assigns `CUSTOMER`. Password reset OTPs reference their user and are deleted when that user is deleted.
-
-Apply the database migration from the `backend` directory with:
-
-```bash
 dotnet ef database update --project src/OnlineStore.Infrastructure --startup-project src/OnlineStore.Api
 ```
 
-`POST /api/auth/register`, `/login`, `/forgot-password`, `/verify-otp`, and `/reset-password` are available from Swagger. OTPs are logged to the console in development through `LoggingEmailSender`, and logout is intentionally client-side token discard because JWT revocation is out of scope for this story.
+The application does not automatically apply migrations. Apply them before starting the API against a new or updated database.
 
-Authenticated customers can use `GET /api/customers/me` to view their profile, `PUT /api/customers/me` to update their name, and `POST /api/customers/me/change-password` to change their password. These endpoints identify the customer from the JWT; email is read-only.
+---
 
-### Product catalog
+## ▶️ Running the Applications
 
-The public `GET /api/products` endpoint returns active products in the paginated response format defined in [app-conventions.md](docs/app-conventions.md). After applying EF migrations, run the API in Development to seed sample brands, categories, and products (including inactive and out-of-stock examples). The seeder fills missing reference tables independently and skips adding sample products when products already exist.
-
-Cloudinary upload credentials and upload UI are deferred to the admin product-management story. Product image upload is not part of this catalog listing story.
-
-### Seeding a development admin account
-
-The API seeds one configured admin account only when running in the Development environment. It creates the user only if the configured email does not already exist. If either setting is missing, seeding is skipped. Configure credentials with user-secrets from the `backend` directory:
+Start the backend from the `backend` directory:
 
 ```bash
-dotnet user-secrets set "Seed:AdminEmail" "admin@example.com" --project src/OnlineStore.Api
-dotnet user-secrets set "Seed:AdminPassword" "replace-with-a-strong-local-password" --project src/OnlineStore.Api
+cd backend
+dotnet run --project src/OnlineStore.Api
 ```
 
-Never commit real admin credentials. The admin role is not accepted by public registration; new registrations are always customers. `GET /api/admin/ping` is a role-protected verification endpoint. Admin API authorization is enforced on the backend, while the frontend role guard only controls navigation and visibility.
+The configured HTTP URL is `http://localhost:5188`. Swagger is available at:
+
+```text
+http://localhost:5188/swagger
+```
+
+In a second terminal, start the Angular application:
+
+```bash
+cd frontend
+npm start
+```
+
+The frontend is served at `http://localhost:4200` and uses the API at `http://localhost:5188/api` in its configured environments.
+
+---
+
+## 🧪 Testing and Quality Checks
+
+### Backend
+
+Run the backend integration tests from the `backend` directory:
+
+```bash
+cd backend
+dotnet test OnlineStore.sln
+```
+
+The current integration tests use `WebApplicationFactory<Program>` and exercise basic health and authorization behavior. They do not require Docker or a separate SQL Server test container.
+
+### Frontend
+
+Run the Angular unit tests:
+
+```bash
+cd frontend
+npm test -- --watch=false
+```
+
+Run lint and a production build:
+
+```bash
+npm run lint
+npm run build
+```
+
+---
+
+## 🔗 API Overview
+
+* Public catalog: `/api/products`, `/api/categories`, `/api/brands`
+* Authentication and customer profile: `/api/auth`, `/api/customers`
+* Cart and checkout: `/api/cart`, `/api/shipping/options`, `/api/orders`
+* Admin catalog: `/api/admin/categories`, `/api/admin/brands`, `/api/admin/products`
+* Admin orders and shipping fees: `/api/admin/orders`, `/api/admin/shipping/governorates`
+
+Admin API routes require an administrator JWT. Customer-specific cart and order routes require customer authentication. The backend enforces access independently of frontend navigation.
+
+---
+
+## 📌 Project Status
+
+🚧 **Under active development.** Features are implemented incrementally, and the API and user interface may evolve as additional stories are completed.
+
+## 📄 License
+
+No license has been specified for this repository.

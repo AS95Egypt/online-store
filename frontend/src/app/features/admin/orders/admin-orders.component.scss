@@ -1,0 +1,243 @@
+.orders-page {
+  display: grid;
+  gap: 1rem;
+  color: var(--text);
+}
+
+.orders-heading h1,
+.orders-heading p {
+  margin: 0;
+}
+
+.orders-heading p {
+  margin-top: 0.35rem;
+  color: var(--muted);
+}
+
+.status-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.status-filter,
+.orders-search button,
+.secondary-button {
+  min-height: 2.45rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.status-filter span {
+  display: inline-grid;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  margin-left: 0.2rem;
+  border-radius: 99px;
+  background: var(--panel-soft);
+  font-size: 0.78rem;
+}
+
+.status-filter.selected {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+
+.status-filter.pending-filter:not(.selected) {
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--line));
+  color: var(--danger);
+}
+
+.orders-search {
+  display: flex;
+  width: min(100%, 34rem);
+  gap: 0.55rem;
+}
+
+.orders-search input {
+  min-width: 0;
+  flex: 1;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+
+.orders-search button {
+  border-color: var(--primary);
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+}
+
+.orders-state,
+.orders-table-wrap {
+  overflow: hidden;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.orders-state {
+  color: var(--muted);
+}
+
+.orders-state p {
+  margin: 0 0 0.6rem;
+}
+
+.error-state {
+  color: var(--danger);
+}
+
+.orders-table-wrap {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.loading-table {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.65rem 1rem;
+}
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1.3fr repeat(4, 0.8fr);
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.skeleton-row span {
+  height: 1rem;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--panel-soft), var(--line), var(--panel-soft));
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.3s linear infinite;
+}
+
+@keyframes skeleton-shimmer {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-row span { animation: none; }
+}
+
+.orders-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.orders-table th {
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.orders-table tbody tr {
+  cursor: pointer;
+}
+
+.orders-table tbody tr:hover,
+.orders-table tbody tr:focus-visible {
+  background: var(--panel-soft);
+  outline: none;
+}
+
+.orders-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.order-number {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 0.25rem 0.55rem;
+  border-radius: 99px;
+  background: var(--panel-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-pending {
+  background: #fff4d6;
+  color: #885900;
+}
+
+.status-confirmed,
+.status-processing {
+  background: #e7f0ff;
+  color: #174b9b;
+}
+
+.status-shipped {
+  background: #eee8ff;
+  color: #5530a5;
+}
+
+.status-delivered,
+.payment-paid {
+  background: #e3f6ec;
+  color: #17643b;
+}
+
+.status-cancelled {
+  background: #fde8e8;
+  color: #a32121;
+}
+
+.payment-pending {
+  background: #fff4d6;
+  color: #885900;
+}
+
+.orders-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.secondary-button {
+  border-radius: 8px;
+}
+
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 640px) {
+  .orders-pager {
+    flex-wrap: wrap;
+  }
+}

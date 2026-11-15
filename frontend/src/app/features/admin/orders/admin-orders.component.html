@@ -1,0 +1,98 @@
+<section class="orders-page">
+  <header class="orders-heading">
+    <div>
+      <h1>Orders</h1>
+      <p>Review and manage customer orders.</p>
+    </div>
+  </header>
+
+  <div class="status-filters" aria-label="Filter orders by status">
+    <button
+      type="button"
+      class="status-filter"
+      [class.selected]="status() === 'All'"
+      (click)="selectStatus('All')"
+    >
+      All <span>{{ counts().all }}</span>
+    </button>
+    @for (filterStatus of statuses; track filterStatus) {
+      <button
+        type="button"
+        class="status-filter"
+        [class.selected]="status() === filterStatus"
+        [class.pending-filter]="filterStatus === 'Pending'"
+        (click)="selectStatus(filterStatus)"
+      >
+        {{ filterStatus }} <span>{{ countFor(filterStatus) }}</span>
+      </button>
+    }
+  </div>
+
+  <form class="orders-search" (submit)="$event.preventDefault(); search()">
+    <label class="visually-hidden" for="orders-search">Search by order number or customer</label>
+    <input
+      id="orders-search"
+      type="search"
+      [value]="searchText()"
+      (input)="updateSearch($event)"
+      placeholder="Search order number, customer, or phone"
+    />
+    <button type="submit">Search</button>
+  </form>
+
+  @if (isLoading()) {
+    <div class="orders-table-wrap loading-table" role="status" aria-busy="true" aria-label="Loading orders">
+      @for (row of skeletonRows; track row) {
+        <div class="skeleton-row" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      }
+    </div>
+  } @else if (loadError()) {
+    <div class="orders-state error-state" role="alert">
+      <p>{{ loadError() }}</p>
+      <button type="button" class="secondary-button" (click)="loadOrders()">Try again</button>
+    </div>
+  } @else if (orders().length === 0) {
+    <div class="orders-state">
+      <p>No orders found.</p>
+      @if (status() !== 'All' || searchText()) {
+        <button type="button" class="secondary-button" (click)="clearFilters()">Clear filters</button>
+      }
+    </div>
+  } @else {
+    <div class="orders-table-wrap">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Payment</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of orders(); track order.id) {
+            <tr tabindex="0" (click)="openOrder(order)" (keydown)="onRowKeydown($event, order)">
+              <td class="order-number">{{ order.orderNumber }}</td>
+              <td>{{ order.createdAt | date: 'd MMM y, HH:mm' }}</td>
+              <td>{{ order.customerName }}</td>
+              <td>{{ order.itemsCount }}</td>
+              <td>{{ order.total | number: '1.2-2' }} EGP</td>
+              <td><span class="badge" [class]="`badge status-${order.status.toLowerCase()}`">{{ order.status }}</span></td>
+              <td><span class="badge" [class]="`badge payment-${order.paymentStatus.toLowerCase()}`">{{ order.paymentStatus }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <nav class="orders-pager" aria-label="Order pages">
+      <button type="button" class="secondary-button" [disabled]="page() <= 1" (click)="changePage(page() - 1)">Previous</button>
+      <span>Page {{ page() }} of {{ pageCount() }} · {{ totalCount() }} orders</span>
+      <button type="button" class="secondary-button" [disabled]="page() >= pageCount()" (click)="changePage(page() + 1)">Next</button>
+    </nav>
+  }
+</section>

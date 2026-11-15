@@ -1,0 +1,91 @@
+<section class="shipping-page">
+  <header class="shipping-heading">
+    <div>
+      <h1>Shipping fees</h1>
+      <p>Set the delivery fee for each governorate.</p>
+    </div>
+  </header>
+
+  <p class="shipping-note">
+    Changes apply to new orders only. Existing orders keep their original fee.
+  </p>
+
+  @if (isLoading()) {
+    <div class="shipping-state" role="status" aria-busy="true">Loading governorates…</div>
+  } @else if (loadError()) {
+    <div class="shipping-state error-state" role="alert">
+      <p>{{ loadError() }}</p>
+      <button type="button" class="shipping-button secondary" (click)="loadGovernorates()">Try again</button>
+    </div>
+  } @else if (governorates().length === 0) {
+    <div class="shipping-state">No governorates found.</div>
+  } @else {
+    <div class="shipping-table-wrap">
+      <table class="shipping-table">
+        <thead><tr><th>Governorate</th><th>Shipping fee</th><th>Actions</th></tr></thead>
+        <tbody>
+          @for (governorate of governorates(); track governorate.id) {
+            <tr>
+              <td>{{ governorate.name }}</td>
+              <td>
+                @if (editingId() === governorate.id) {
+                  <label class="visually-hidden" [for]="'shipping-fee-' + governorate.id">
+                    Shipping fee for {{ governorate.name }}
+                  </label>
+                  <div class="fee-editor">
+                    <input
+                      [id]="'shipping-fee-' + governorate.id"
+                      type="number"
+                      min="0"
+                      max="9007199254740991"
+                      step="0.01"
+                      [value]="editingFee()"
+                      (input)="updateFee($event)"
+                    />
+                    <span>EGP</span>
+                  </div>
+                  @if (fieldError()) {
+                    <p class="field-error" role="alert">{{ fieldError() }}</p>
+                  }
+                } @else {
+                  {{ governorate.shippingFee | number: '1.2-2' }} EGP
+                }
+              </td>
+              <td>
+                @if (editingId() === governorate.id) {
+                  <div class="shipping-actions">
+                    <button
+                      type="button"
+                      class="shipping-button primary"
+                      [disabled]="savingId() === governorate.id"
+                      (click)="saveFee(governorate)"
+                    >
+                      {{ savingId() === governorate.id ? 'Saving…' : 'Save' }}
+                    </button>
+                    <button
+                      type="button"
+                      class="shipping-button secondary"
+                      [disabled]="savingId() === governorate.id"
+                      (click)="cancelEdit()"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                } @else {
+                  <button
+                    type="button"
+                    class="shipping-button secondary"
+                    [disabled]="savingId() !== null"
+                    (click)="startEdit(governorate)"
+                  >
+                    Edit
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

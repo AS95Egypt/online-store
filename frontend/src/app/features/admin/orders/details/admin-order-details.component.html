@@ -1,0 +1,173 @@
+@if (isLoading()) {
+  <div class="detail-state" role="status" aria-busy="true">Loading order details…</div>
+} @else if (isNotFound()) {
+  <div class="detail-state" role="alert">
+    <p>Order not found.</p>
+    <a routerLink="/admin/orders">Back to orders</a>
+  </div>
+} @else if (loadError()) {
+  <div class="detail-state error-state" role="alert">
+    <p>{{ loadError() }}</p>
+    <button type="button" class="button secondary" (click)="loadOrder()">Try again</button>
+  </div>
+} @else if (order(); as currentOrder) {
+  <main class="order-detail-page">
+    <a class="back-link" routerLink="/admin/orders">← Orders</a>
+
+    <header class="order-header">
+      <div>
+        <div class="order-title-row">
+          <h1>{{ currentOrder.orderNumber }}</h1>
+          <span class="badge" [class]="'badge status-' + currentOrder.status.toLowerCase()">{{ currentOrder.status }}</span>
+          <span class="badge" [class]="'badge payment-' + currentOrder.paymentStatus.toLowerCase()">
+            Payment: {{ currentOrder.paymentStatus }}
+          </span>
+        </div>
+        <p>Placed {{ currentOrder.createdAt | date: 'd MMM y, HH:mm' }}</p>
+      </div>
+    </header>
+
+    @if (currentOrder.status === 'Cancelled') {
+      <section class="cancelled-banner" role="status">
+        <strong>Order cancelled</strong>
+        @if (cancelledAt) {
+          <span>{{ cancelledAt | date: 'd MMM y, HH:mm' }} · {{ changedCancelledBy }}</span>
+        }
+      </section>
+    } @else {
+      <section class="workflow-panel" aria-label="Order progress">
+        <ol class="stepper">
+          @for (step of statuses; track step; let last = $last) {
+            <li class="step" [class.complete]="stepState(step) === 'complete'" [class.current]="stepState(step) === 'current'">
+              <span class="step-marker" aria-hidden="true">{{ stepState(step) === 'complete' ? '✓' : '' }}</span>
+              <span>{{ step }}</span>
+              @if (!last) {
+                <span class="step-line" aria-hidden="true"></span>
+              }
+            </li>
+          }
+        </ol>
+        <div class="workflow-actions">
+          @if (currentOrder.availableActions.nextStatus; as nextStatus) {
+            <button type="button" class="button primary" [disabled]="isSubmitting()" (click)="requestAction('status')">
+              {{ nextActionLabel(nextStatus) }}
+            </button>
+          }
+          @if (currentOrder.availableActions.canCancel) {
+            <button type="button" class="button danger-outline" [disabled]="isSubmitting()" (click)="requestAction('cancel')">
+              Cancel order
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    <div class="details-grid">
+      <section class="detail-card items-card">
+        <h2>Items</h2>
+        <div class="items-list">
+          @for (item of currentOrder.items; track $index) {
+            <article class="order-item">
+              <div>
+                <strong>{{ item.productNameSnapshot }}</strong>
+                <span>SKU {{ item.skuSnapshot }}</span>
+              </div>
+              <span>{{ item.unitPriceSnapshot | number: '1.2-2' }} EGP × {{ item.quantity }}</span>
+              <strong>{{ item.lineTotal | number: '1.2-2' }} EGP</strong>
+            </article>
+          }
+        </div>
+        <dl class="totals">
+          <div><dt>Subtotal</dt><dd>{{ currentOrder.subtotal | number: '1.2-2' }} EGP</dd></div>
+          <div><dt>Shipping fee</dt><dd>{{ currentOrder.shippingFee | number: '1.2-2' }} EGP</dd></div>
+          <div class="grand-total"><dt>Total</dt><dd>{{ currentOrder.total | number: '1.2-2' }} EGP</dd></div>
+        </dl>
+      </section>
+
+      <div class="side-details">
+        <section class="detail-card">
+          <h2>Customer &amp; shipping</h2>
+          <dl class="address-list">
+            <div><dt>Customer</dt><dd>{{ currentOrder.customerName }}</dd></div>
+            <div><dt>Phone</dt><dd>{{ currentOrder.customerPhone }}</dd></div>
+            <div><dt>Recipient</dt><dd>{{ currentOrder.shippingFullName }}</dd></div>
+            <div><dt>Governorate</dt><dd>{{ currentOrder.shippingGovernorateName }}</dd></div>
+            <div><dt>City</dt><dd>{{ currentOrder.shippingCity }}</dd></div>
+            <div><dt>District</dt><dd>{{ currentOrder.shippingDistrict }}</dd></div>
+            <div><dt>Street</dt><dd>{{ currentOrder.shippingStreet }}</dd></div>
+            <div><dt>Building</dt><dd>{{ currentOrder.shippingBuildingNumber }}</dd></div>
+            @if (currentOrder.shippingApartment) {
+              <div><dt>Apartment</dt><dd>{{ currentOrder.shippingApartment }}</dd></div>
+            }
+            @if (currentOrder.shippingInstructions) {
+              <div><dt>Instructions</dt><dd>{{ currentOrder.shippingInstructions }}</dd></div>
+            }
+          </dl>
+        </section>
+
+        <section class="detail-card payment-card">
+          <h2>Payment</h2>
+          <dl class="address-list">
+            <div><dt>Method</dt><dd>Cash on Delivery</dd></div>
+            <div><dt>Amount due</dt><dd>{{ currentOrder.total | number: '1.2-2' }} EGP</dd></div>
+            <div><dt>Status</dt><dd><span class="badge" [class]="'badge payment-' + currentOrder.paymentStatus.toLowerCase()">{{ currentOrder.paymentStatus }}</span></dd></div>
+            @if (currentOrder.paidAt) {
+              <div><dt>Paid at</dt><dd>{{ currentOrder.paidAt | date: 'd MMM y, HH:mm' }}</dd></div>
+            }
+          </dl>
+          @if (currentOrder.status !== 'Cancelled' && currentOrder.paymentStatus !== 'Paid') {
+            <button
+              type="button"
+              class="button primary"
+              [disabled]="!currentOrder.availableActions.canMarkPaid || isSubmitting()"
+              (click)="requestAction('paid')"
+            >
+              Mark as paid
+            </button>
+            @if (!currentOrder.availableActions.canMarkPaid) {
+              <p class="payment-hint">Available once the order is shipped.</p>
+            }
+          }
+        </section>
+      </div>
+    </div>
+
+    @if (actionError()) {
+      <p class="action-error" role="alert">{{ actionError() }}</p>
+    }
+
+    <section class="detail-card history-card">
+      <h2>Status history</h2>
+      <ol class="history-list">
+        @for (entry of currentOrder.statusHistory; track $index) {
+          <li>
+            <span class="history-dot" aria-hidden="true"></span>
+            <div>
+              <strong>{{ entry.status }}</strong>
+              <span>{{ entry.changedAt | date: 'd MMM y, HH:mm' }} · {{ entry.changedBy || 'Customer' }}</span>
+            </div>
+          </li>
+        }
+      </ol>
+    </section>
+  </main>
+
+  @if (confirmedAction(); as action) {
+    <app-confirm-dialog
+      [title]="action === 'status' ? 'Update order status' : action === 'cancel' ? 'Cancel order' : 'Mark payment as paid'"
+      [message]="
+        action === 'status'
+          ? 'Move order ' + currentOrder.orderNumber + ' from ' + currentOrder.status + ' to ' + currentOrder.availableActions.nextStatus + '?'
+          : action === 'cancel'
+            ? 'Cancel this order? Stock for ' + cancellationQuantity + ' items will be returned to inventory. This cannot be undone.'
+            : 'Confirm that ' + (currentOrder.total | number: '1.2-2') + ' EGP was collected from the customer? This cannot be undone.'
+      "
+      [confirmLabel]="action === 'status' ? nextActionLabel(currentOrder.availableActions.nextStatus) : action === 'cancel' ? 'Yes, cancel order' : 'Yes, mark as paid'"
+      [danger]="action === 'cancel'"
+      [busy]="isSubmitting()"
+      [items]="action === 'cancel' ? cancellationItems : []"
+      (confirmed)="confirmAction()"
+      (cancelled)="dismissConfirmation()"
+    />
+  }
+}

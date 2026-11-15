@@ -1,0 +1,25 @@
+<div class="dialog-backdrop">
+  <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <h2 id="confirm-title">{{ title }}</h2>
+    <p>{{ message }}</p>
+    @if (items.length > 0) {
+      <ul class="dialog-items">
+        @for (item of items; track item.name) {
+          <li>{{ item.name }} <span>× {{ item.quantity }}</span></li>
+        }
+      </ul>
+    }
+    <div class="dialog-actions">
+      <button type="button" class="dialog-cancel" [disabled]="busy" (click)="cancelled.emit()">Cancel</button>
+      <button
+        type="button"
+        class="dialog-confirm"
+        [class.danger]="danger"
+        [disabled]="busy"
+        (click)="confirmed.emit()"
+      >
+        {{ busy ? 'Working…' : confirmLabel }}
+      </button>
+    </div>
+  </section>
+</div>
