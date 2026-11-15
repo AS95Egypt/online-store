@@ -54,6 +54,7 @@ public sealed class ProductCatalogSeeder
         _dbContext.Products.AddRange(
             new Product
             {
+                Sku = "SKU-0001",
                 ItemNameAr = "سماعات لاسلكية",
                 ItemNameEn = "Wireless Headphones",
                 CategoryId = category.Id,
@@ -66,6 +67,7 @@ public sealed class ProductCatalogSeeder
             },
             new Product
             {
+                Sku = "SKU-0002",
                 ItemNameAr = "ماوس لاسلكي",
                 ItemNameEn = "Wireless Mouse",
                 CategoryId = category.Id,
@@ -78,6 +80,7 @@ public sealed class ProductCatalogSeeder
             },
             new Product
             {
+                Sku = "SKU-0003",
                 ItemNameAr = "لوحة مفاتيح ميكانيكية",
                 ItemNameEn = "Mechanical Keyboard",
                 CategoryId = category.Id,
@@ -90,6 +93,7 @@ public sealed class ProductCatalogSeeder
             },
             new Product
             {
+                Sku = "SKU-0004",
                 ItemNameAr = "حامل هاتف",
                 ItemNameEn = "Phone Stand",
                 CategoryId = category.Id,

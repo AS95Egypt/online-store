@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineStore.Application.Customers;
+using OnlineStore.Domain.Entities;
 
 namespace OnlineStore.Api.Controllers;
 
@@ -37,6 +38,55 @@ public class CustomerController : ControllerBase
         if (result.Value is null)
         {
             return Problem("The customer profile could not be loaded.");
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet("address")]
+    [Authorize(Roles = UserRoles.Customer)]
+    public async Task<IActionResult> GetAddressAsync()
+    {
+        var userId = CurrentUserId;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _customerService.GetAddressAsync(userId);
+        if (result.NotFound)
+        {
+            return NotFound();
+        }
+
+        return Ok(result.Value ?? new CustomerAddressDto(null, null, null, null, null, null, null, null, null, null));
+    }
+
+    [HttpPut("address")]
+    [Authorize(Roles = UserRoles.Customer)]
+    public async Task<IActionResult> UpdateAddressAsync([FromBody] UpdateCustomerAddressRequest request)
+    {
+        var userId = CurrentUserId;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _customerService.UpdateAddressAsync(userId, request);
+        if (result.NotFound)
+        {
+            return NotFound();
+        }
+
+        if (result.ValidationErrors is not null)
+        {
+            return ValidationProblem(new ValidationProblemDetails(
+                result.ValidationErrors.ToDictionary(error => error.Key, error => error.Value)));
+        }
+
+        if (result.Value is null)
+        {
+            return Problem("The customer address could not be updated.");
         }
 
         return Ok(result.Value);

@@ -1,6 +1,138 @@
 @OnlineStore.Api_HostAddress = http://localhost:5188
+@adminToken = replace-with-admin-jwt
+@categoryId = 1
+@brandId = 1
+@productId = 1
 
-GET {{OnlineStore.Api_HostAddress}}/weatherforecast/
+### Admin category list
+GET {{OnlineStore.Api_HostAddress}}/api/admin/categories
+Authorization: Bearer {{adminToken}}
 Accept: application/json
 
 ###
+
+### Create category
+POST {{OnlineStore.Api_HostAddress}}/api/admin/categories
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nameAr": "أجهزة منزلية تجريبية",
+  "nameEn": "Sample Home Appliances",
+  "displayImageUrl": "https://example.com/categories/appliances.jpg"
+}
+
+### Get category by ID
+GET {{OnlineStore.Api_HostAddress}}/api/admin/categories/{{categoryId}}
+Authorization: Bearer {{adminToken}}
+
+### Update category
+PUT {{OnlineStore.Api_HostAddress}}/api/admin/categories/{{categoryId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nameAr": "أجهزة منزلية تجريبية",
+  "nameEn": "Sample Home Appliances",
+  "displayImageUrl": null
+}
+
+### Activate category
+PATCH {{OnlineStore.Api_HostAddress}}/api/admin/categories/{{categoryId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "isActive": true
+}
+
+### Admin brand list
+GET {{OnlineStore.Api_HostAddress}}/api/admin/brands
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+### Create brand
+POST {{OnlineStore.Api_HostAddress}}/api/admin/brands
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nameAr": "علامة تجارية تجريبية",
+  "nameEn": "Sample Brand",
+  "displayImageUrl": null
+}
+
+### Get brand by ID
+GET {{OnlineStore.Api_HostAddress}}/api/admin/brands/{{brandId}}
+Authorization: Bearer {{adminToken}}
+
+### Update brand
+PUT {{OnlineStore.Api_HostAddress}}/api/admin/brands/{{brandId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nameAr": "علامة تجارية تجريبية",
+  "nameEn": "Sample Brand",
+  "displayImageUrl": null
+}
+
+### Search admin products
+GET {{OnlineStore.Api_HostAddress}}/api/admin/products?page=1&pageSize=20&search=SKU
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+### Create product
+POST {{OnlineStore.Api_HostAddress}}/api/admin/products
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nameAr": "سماعات لاسلكية",
+  "nameEn": "Wireless Headphones",
+  "descriptionAr": null,
+  "descriptionEn": "Wireless headphones for everyday listening.",
+  "price": 1250,
+  "qty": 12,
+  "categoryId": {{categoryId}},
+  "brandId": {{brandId}},
+  "primaryImageUrl": "https://example.com/products/headphones.jpg",
+  "thumb1Url": null,
+  "thumb2Url": null,
+  "thumb3Url": null,
+  "thumb4Url": null
+}
+
+### Get product by ID
+GET {{OnlineStore.Api_HostAddress}}/api/admin/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+
+### Update product
+PUT {{OnlineStore.Api_HostAddress}}/api/admin/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nameAr": "سماعات لاسلكية",
+  "nameEn": "Wireless Headphones",
+  "descriptionAr": null,
+  "descriptionEn": "Wireless headphones for everyday listening.",
+  "price": 1299,
+  "qty": 10,
+  "categoryId": {{categoryId}},
+  "brandId": {{brandId}},
+  "primaryImageUrl": "https://example.com/products/headphones.jpg",
+  "thumb1Url": null,
+  "thumb2Url": null,
+  "thumb3Url": null,
+  "thumb4Url": null
+}
+
+### Deactivate product
+PATCH {{OnlineStore.Api_HostAddress}}/api/admin/products/{{productId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "isActive": false
+}

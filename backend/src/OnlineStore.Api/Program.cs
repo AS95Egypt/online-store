@@ -7,16 +7,22 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OnlineStore.Application.Auth;
+using OnlineStore.Application.Cart;
 using OnlineStore.Application.Brands;
 using OnlineStore.Application.Categories;
 using OnlineStore.Application.Customers;
+using OnlineStore.Application.Orders;
 using OnlineStore.Application.Products;
+using OnlineStore.Application.Shipping;
 using OnlineStore.Domain.Entities;
 using OnlineStore.Infrastructure.Auth;
+using OnlineStore.Infrastructure.Carts;
 using OnlineStore.Infrastructure.Brands;
 using OnlineStore.Infrastructure.Categories;
 using OnlineStore.Infrastructure.Customers;
 using OnlineStore.Infrastructure.Products;
+using OnlineStore.Infrastructure.Orders;
+using OnlineStore.Infrastructure.Shipping;
 using OnlineStore.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,8 +38,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
+builder.Services.AddScoped<IAdminBrandService, AdminBrandService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAdminProductService, AdminProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IShippingService, ShippingService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 var jwtSecret = builder.Configuration["Jwt:Secret"];
 if (string.IsNullOrWhiteSpace(jwtSecret))
@@ -68,6 +80,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IEmailSender, LoggingEmailSender>();
 builder.Services.AddScoped<AdminSeeder>();
 builder.Services.AddScoped<ProductCatalogSeeder>();
+builder.Services.AddScoped<GovernorateSeeder>();
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -110,6 +123,8 @@ if (app.Environment.IsDevelopment())
     await adminSeeder.SeedAsync();
     var productCatalogSeeder = scope.ServiceProvider.GetRequiredService<ProductCatalogSeeder>();
     await productCatalogSeeder.SeedAsync();
+    var governorateSeeder = scope.ServiceProvider.GetRequiredService<GovernorateSeeder>();
+    await governorateSeeder.SeedAsync();
 }
 app.UseCors("AngularApp");
 app.UseHttpsRedirection();

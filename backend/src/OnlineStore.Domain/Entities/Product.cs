@@ -9,6 +9,7 @@ public static class ProductStockStatuses
 public class Product
 {
     public int Id { get; set; }
+    public string Sku { get; set; } = string.Empty;
     public string ItemNameAr { get; set; } = string.Empty;
     public string ItemNameEn { get; set; } = string.Empty;
     public int CategoryId { get; set; }

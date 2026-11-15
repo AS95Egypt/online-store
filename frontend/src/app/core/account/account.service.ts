@@ -5,7 +5,9 @@ import { environment } from '../../../environments/environment';
 import { AuthService } from '../auth/auth.service';
 import {
   ChangePasswordRequest,
+  CustomerAddress,
   CustomerProfile,
+  UpdateCustomerAddressRequest,
   UpdateCustomerProfileRequest,
 } from './account.models';
 
@@ -16,6 +18,7 @@ export class AccountService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   private readonly baseUrl = `${environment.apiUrl}/customers/me`;
+  private readonly addressUrl = `${environment.apiUrl}/customers/address`;
 
   getProfile(): Observable<CustomerProfile> {
     return this.http.get<CustomerProfile>(this.baseUrl).pipe(
@@ -31,5 +34,13 @@ export class AccountService {
 
   changePassword(request: ChangePasswordRequest): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/change-password`, request);
+  }
+
+  getAddress(): Observable<CustomerAddress> {
+    return this.http.get<CustomerAddress>(this.addressUrl);
+  }
+
+  updateAddress(request: UpdateCustomerAddressRequest): Observable<CustomerAddress> {
+    return this.http.put<CustomerAddress>(this.addressUrl, request);
   }
 }

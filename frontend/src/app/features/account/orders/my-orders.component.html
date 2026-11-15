@@ -1,0 +1,155 @@
+<section class="orders-page" aria-labelledby="orders-title">
+  <header class="page-heading">
+    <p class="eyebrow">Account</p>
+    <h1 id="orders-title">My Orders</h1>
+    <p>Track your recent purchases and delivery progress.</p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="page-state" role="status" aria-busy="true">Loading your orders…</div>
+  } @else if (pageError()) {
+    <div class="page-state" role="alert">
+      <p>{{ pageError() }}</p>
+      <button type="button" class="secondary-button" (click)="loadOrders()">Try again</button>
+    </div>
+  } @else if (orders().length === 0) {
+    <div class="page-state">
+      <h2>No orders yet</h2>
+      <p>Your placed orders will appear here.</p>
+    </div>
+  } @else {
+    <div class="order-list">
+      @for (order of orders(); track order.orderNumber) {
+        <article class="order-card">
+          <button
+            type="button"
+            class="order-summary"
+            [attr.aria-expanded]="expandedOrderNumber() === order.orderNumber"
+            (click)="toggleOrder(order.orderNumber)"
+          >
+            <span class="order-main">
+              <strong>{{ order.orderNumber }}</strong>
+              <span>{{ order.createdAt | date: 'mediumDate' }} · {{ order.itemsCount }} item(s)</span>
+            </span>
+            <span class="order-status">{{ order.status }}</span>
+            <span class="order-total">{{ order.total | number: '1.0-2' }} EGP</span>
+            <span class="expand-icon" aria-hidden="true">
+              {{ expandedOrderNumber() === order.orderNumber ? '−' : '+' }}
+            </span>
+          </button>
+
+          @if (expandedOrderNumber() === order.orderNumber) {
+            <div class="order-details">
+              @if (loadingDetails() === order.orderNumber) {
+                <p class="details-state" role="status">Loading order details…</p>
+              } @else if (detailsErrors()[order.orderNumber]; as detailError) {
+                <div class="details-state" role="alert">
+                  <p>{{ detailError }}</p>
+                  <button type="button" class="secondary-button" (click)="retryDetails(order.orderNumber)">
+                    Try again
+                  </button>
+                </div>
+              } @else if (orderDetails()[order.orderNumber]; as details) {
+                <div class="details-grid">
+                  <div class="details-content">
+                    <div class="line-items">
+                      @for (item of details.items; track $index) {
+                        <div class="line-item">
+                          <div>
+                            <strong>{{ item.productName }}</strong>
+                            <span>{{ item.sku }} · {{ item.quantity }} × {{ item.unitPrice | number: '1.0-2' }} EGP</span>
+                          </div>
+                          <strong>{{ item.lineTotal | number: '1.0-2' }} EGP</strong>
+                        </div>
+                      }
+                    </div>
+
+                    <dl class="totals">
+                      <div><dt>Subtotal</dt><dd>{{ details.subtotal | number: '1.0-2' }} EGP</dd></div>
+                      <div><dt>Shipping</dt><dd>{{ details.shippingFee | number: '1.0-2' }} EGP</dd></div>
+                      <div class="grand-total"><dt>Total</dt><dd>{{ details.total | number: '1.0-2' }} EGP</dd></div>
+                    </dl>
+
+                    <div class="address">
+                      <h3>Shipping address</h3>
+                      <p>{{ details.shippingAddress.fullName }} · {{ details.shippingAddress.phone }}</p>
+                      <p>
+                        {{ details.shippingAddress.buildingNumber }} {{ details.shippingAddress.street }},
+                        {{ details.shippingAddress.district }}, {{ details.shippingAddress.city }},
+                        {{ details.shippingAddress.governorateName }}
+                      </p>
+                      @if (details.shippingAddress.apartment) {
+                        <p>{{ details.shippingAddress.apartment }}</p>
+                      }
+                      @if (details.shippingAddress.instructions) {
+                        <p>{{ details.shippingAddress.instructions }}</p>
+                      }
+                    </div>
+                  </div>
+
+                  <aside class="timeline" aria-label="Order status timeline">
+                    @if (details.status === 'Cancelled') {
+                      <div class="timeline-step cancelled">
+                        <span class="step-marker">×</span>
+                        <span>Cancelled</span>
+                      </div>
+                    } @else {
+                      @for (status of statuses; track status; let last = $last) {
+                        <div
+                          class="timeline-step"
+                          [class.complete]="isStatusComplete(details.status, status)"
+                          [class.current]="details.status === status"
+                          [class.last-step]="last"
+                        >
+                          <span class="step-marker">
+                            {{ isStatusComplete(details.status, status) ? '✓' : '' }}
+                          </span>
+                          <span>{{ status }}</span>
+                        </div>
+                      }
+                    }
+                  </aside>
+                </div>
+
+                @if (details.status === 'Pending') {
+                  <div class="cancel-order">
+                    @if (confirmingCancellation() === order.orderNumber) {
+                      <p>Cancel this order? This action cannot be undone.</p>
+                      <div class="cancel-actions">
+                        <button
+                          type="button"
+                          class="secondary-button"
+                          [disabled]="isCancelling(order.orderNumber)"
+                          (click)="keepOrder()"
+                        >
+                          Keep order
+                        </button>
+                        <button
+                          type="button"
+                          class="secondary-button"
+                          [disabled]="isCancelling(order.orderNumber)"
+                          (click)="confirmCancellation(order.orderNumber)"
+                        >
+                          {{ isCancelling(order.orderNumber) ? 'Cancelling…' : 'Yes, cancel order' }}
+                        </button>
+                      </div>
+                    } @else {
+                      <button
+                        type="button"
+                        class="secondary-button"
+                        [disabled]="isCancelling(order.orderNumber)"
+                        (click)="requestCancellation(order.orderNumber)"
+                      >
+                        Cancel order
+                      </button>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

@@ -2,6 +2,7 @@ namespace OnlineStore.Application.Products;
 
 public record ProductListItemDto(
     int Id,
+    string Sku,
     string NameAr,
     string NameEn,
     decimal Price,
@@ -13,6 +14,7 @@ public record ProductListItemDto(
 
 public record ProductDetailsDto(
     int Id,
+    string Sku,
     string NameAr,
     string NameEn,
     decimal Price,

@@ -9,6 +9,12 @@ public interface ICustomerService
         UpdateCustomerProfileRequest request);
 
     Task<CustomerServiceResult<bool>> ChangePasswordAsync(string userId, ChangePasswordRequest request);
+
+    Task<CustomerServiceResult<CustomerAddressDto>> GetAddressAsync(string userId);
+
+    Task<CustomerServiceResult<CustomerAddressDto>> UpdateAddressAsync(
+        string userId,
+        UpdateCustomerAddressRequest request);
 }
 
 public sealed record CustomerServiceResult<T>(

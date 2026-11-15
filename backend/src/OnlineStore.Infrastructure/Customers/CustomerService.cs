@@ -105,9 +105,115 @@ public class CustomerService : ICustomerService
         return new CustomerServiceResult<bool>(true);
     }
 
+    public async Task<CustomerServiceResult<CustomerAddressDto>> GetAddressAsync(string userId)
+    {
+        var user = await _dbContext.Users
+            .AsNoTracking()
+            .Include(candidate => candidate.ShippingGovernorate)
+            .SingleOrDefaultAsync(candidate => candidate.Id == userId);
+        if (user is null)
+        {
+            return new CustomerServiceResult<CustomerAddressDto>(NotFound: true);
+        }
+
+        return new CustomerServiceResult<CustomerAddressDto>(ToAddressResponse(user));
+    }
+
+    public async Task<CustomerServiceResult<CustomerAddressDto>> UpdateAddressAsync(
+        string userId,
+        UpdateCustomerAddressRequest request)
+    {
+        var errors = new Dictionary<string, string[]>();
+        ValidateAddressField(request.FullName, nameof(request.FullName), 200, errors);
+        ValidateAddressField(request.Phone, nameof(request.Phone), 30, errors);
+        ValidateAddressField(request.City, nameof(request.City), 150, errors);
+        ValidateAddressField(request.District, nameof(request.District), 150, errors);
+        ValidateAddressField(request.Street, nameof(request.Street), 250, errors);
+        ValidateAddressField(request.BuildingNumber, nameof(request.BuildingNumber), 50, errors);
+        ValidateOptionalAddressField(request.Apartment, nameof(request.Apartment), 100, errors);
+        ValidateOptionalAddressField(request.Instructions, nameof(request.Instructions), 1000, errors);
+
+        var governorateExists = await _dbContext.Governorates
+            .AnyAsync(governorate => governorate.Id == request.GovernorateId);
+        if (!governorateExists)
+        {
+            errors[nameof(request.GovernorateId)] = ["Select a valid governorate."];
+        }
+
+        if (errors.Count > 0)
+        {
+            return new CustomerServiceResult<CustomerAddressDto>(ValidationErrors: errors);
+        }
+
+        var user = await _dbContext.Users
+            .SingleOrDefaultAsync(candidate => candidate.Id == userId);
+        if (user is null)
+        {
+            return new CustomerServiceResult<CustomerAddressDto>(NotFound: true);
+        }
+
+        user.ShippingFullName = request.FullName.Trim();
+        user.ShippingPhone = request.Phone.Trim();
+        user.ShippingGovernorateId = request.GovernorateId;
+        user.ShippingCity = request.City.Trim();
+        user.ShippingDistrict = request.District.Trim();
+        user.ShippingStreet = request.Street.Trim();
+        user.ShippingBuildingNumber = request.BuildingNumber.Trim();
+        user.ShippingApartment = string.IsNullOrWhiteSpace(request.Apartment) ? null : request.Apartment.Trim();
+        user.ShippingInstructions = string.IsNullOrWhiteSpace(request.Instructions) ? null : request.Instructions.Trim();
+        await _dbContext.SaveChangesAsync();
+
+        var governorate = await _dbContext.Governorates
+            .AsNoTracking()
+            .SingleAsync(candidate => candidate.Id == request.GovernorateId);
+        return new CustomerServiceResult<CustomerAddressDto>(
+            ToAddressResponse(user, governorate.Name));
+    }
+
     private Task<User?> FindUserAsync(string userId) =>
         _dbContext.Users.SingleOrDefaultAsync(user => user.Id == userId);
 
     private static CustomerProfileResponse ToProfileResponse(User user) =>
         new(user.Id, user.Name, user.Email, user.Role);
+
+    private static CustomerAddressDto ToAddressResponse(User user, string? governorateName = null) =>
+        new(
+            user.ShippingFullName,
+            user.ShippingPhone,
+            user.ShippingGovernorateId,
+            governorateName ?? user.ShippingGovernorate?.Name,
+            user.ShippingCity,
+            user.ShippingDistrict,
+            user.ShippingStreet,
+            user.ShippingBuildingNumber,
+            user.ShippingApartment,
+            user.ShippingInstructions);
+
+    private static void ValidateAddressField(
+        string? value,
+        string field,
+        int maxLength,
+        IDictionary<string, string[]> errors)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            errors[field] = [$"{field} is required."];
+        }
+        else if (value.Trim().Length > maxLength)
+        {
+            errors[field] = [$"{field} must be {maxLength} characters or fewer."];
+        }
+    }
+
+    private static void ValidateOptionalAddressField(
+        string? value,
+        string field,
+        int maxLength,
+        IDictionary<string, string[]> errors)
+    {
+        if (value?.Trim().Length > maxLength)
+        {
+            errors[field] = [$"{field} must be {maxLength} characters or fewer."];
+        }
+    }
 }

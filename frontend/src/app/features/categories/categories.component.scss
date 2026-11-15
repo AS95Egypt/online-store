@@ -58,6 +58,7 @@ h1 {
 
 .category-image,
 .skeleton-image {
+  position: relative;
   display: grid;
   aspect-ratio: 4 / 3;
   overflow: hidden;
@@ -66,9 +67,12 @@ h1 {
 }
 
 .category-image img {
+  position: absolute;
+  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
 }
 
 .category-name {

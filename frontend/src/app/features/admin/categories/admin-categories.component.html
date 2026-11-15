@@ -1,0 +1,90 @@
+<section class="admin-page">
+  <header class="admin-heading">
+    <div>
+      <h1>Categories</h1>
+      <p>Manage the categories shown in the storefront.</p>
+    </div>
+    <button type="button" class="admin-primary" (click)="startCreate()">Add category</button>
+  </header>
+
+  @if (showForm()) {
+    <form class="admin-panel admin-form" [formGroup]="form" (ngSubmit)="save()">
+      <h2>{{ editingId() === null ? 'New category' : 'Edit category' }}</h2>
+      <div class="admin-form-grid">
+        <div class="admin-field">
+          <label for="category-name-ar">Arabic name</label>
+          <input id="category-name-ar" formControlName="nameAr" maxlength="200" />
+          @if (form.controls.nameAr.touched && form.controls.nameAr.invalid) {
+            <p class="admin-field-error">Enter an Arabic name (200 characters max).</p>
+          } @else if (fieldError('nameAr')) {
+            <p class="admin-field-error">{{ fieldError('nameAr') }}</p>
+          }
+        </div>
+        <div class="admin-field">
+          <label for="category-name-en">English name</label>
+          <input id="category-name-en" formControlName="nameEn" maxlength="200" />
+          @if (form.controls.nameEn.touched && form.controls.nameEn.invalid) {
+            <p class="admin-field-error">Enter an English name (200 characters max).</p>
+          } @else if (fieldError('nameEn')) {
+            <p class="admin-field-error">{{ fieldError('nameEn') }}</p>
+          }
+        </div>
+        <div class="admin-field">
+          <label for="category-image">Display image URL (optional)</label>
+          <input id="category-image" type="url" formControlName="displayImageUrl" maxlength="2048" />
+          @if (fieldError('displayImageUrl')) {
+            <p class="admin-field-error">{{ fieldError('displayImageUrl') }}</p>
+          }
+        </div>
+      </div>
+      @if (formError()) {
+        <p class="admin-error" role="alert">{{ formError() }}</p>
+      }
+      <div class="admin-actions">
+        <button type="submit" class="admin-primary" [disabled]="isSaving()">
+          {{ isSaving() ? 'Saving…' : 'Save category' }}
+        </button>
+        <button type="button" class="admin-secondary" [disabled]="isSaving()" (click)="cancelEdit()">Cancel</button>
+      </div>
+    </form>
+  }
+
+  @if (isLoading()) {
+    <div class="admin-panel admin-state" role="status" aria-busy="true">Loading categories…</div>
+  } @else if (loadError()) {
+    <div class="admin-panel admin-state" role="alert">
+      <p>{{ loadError() }}</p>
+      <button type="button" class="admin-secondary" (click)="loadCategories()">Try again</button>
+    </div>
+  } @else if (categories().length === 0) {
+    <div class="admin-panel admin-state">No categories yet.</div>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Arabic name</th><th>English name</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          @for (category of categories(); track category.id) {
+            <tr>
+              <td>{{ category.nameAr }}</td>
+              <td>{{ category.nameEn }}</td>
+              <td><span class="admin-status" [class.inactive]="!category.isActive">{{ category.isActive ? 'Active' : 'Inactive' }}</span></td>
+              <td>
+                <div class="admin-actions">
+                  <button type="button" class="admin-secondary" (click)="edit(category)">Edit</button>
+                  <button
+                    type="button"
+                    class="admin-secondary"
+                    [disabled]="changingStatusId() === category.id"
+                    (click)="toggleStatus(category)"
+                  >
+                    {{ category.isActive ? 'Deactivate' : 'Activate' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

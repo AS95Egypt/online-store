@@ -27,7 +27,7 @@ public class ProductService : IProductService
 
         var activeProducts = _dbContext.Products
             .AsNoTracking()
-            .Where(product => product.IsActive);
+            .Where(product => product.IsActive && product.Category.IsActive);
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
@@ -77,6 +77,7 @@ public class ProductService : IProductService
             .Take(pageSize)
             .Select(product => new ProductListItemDto(
                 product.Id,
+                product.Sku,
                 product.ItemNameAr,
                 product.ItemNameEn,
                 product.Price,
@@ -107,11 +108,12 @@ public class ProductService : IProductService
     {
         return await _dbContext.Products
             .AsNoTracking()
-            .Where(product => product.IsActive && product.Id == id)
+            .Where(product => product.IsActive && product.Category.IsActive && product.Id == id)
             .Include(product => product.Brand)
             .Include(product => product.Category)
             .Select(product => new ProductDetailsDto(
                 product.Id,
+                product.Sku,
                 product.ItemNameAr,
                 product.ItemNameEn,
                 product.Price,

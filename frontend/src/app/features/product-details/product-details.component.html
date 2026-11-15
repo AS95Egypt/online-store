@@ -72,6 +72,15 @@
         <p class="product-description">
           {{ productData.descriptionEn || 'No description available.' }}
         </p>
+        <button
+          type="button"
+          class="add-to-cart-button"
+          [disabled]="isAdding() || productData.stockStatus !== 'InStock' || productData.qty < 1"
+          (click)="addToCart()"
+        >
+          <span aria-hidden="true">🛒</span>
+          {{ isAdding() ? 'Adding…' : 'Add to cart' }}
+        </button>
       </div>
     </div>
   }

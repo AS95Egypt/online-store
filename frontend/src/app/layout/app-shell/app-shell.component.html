@@ -25,6 +25,15 @@
 
   <nav class="nav" aria-label="Main navigation">
     <app-side-menu />
+    @if ((currentRole$ | async) !== 'ADMIN') {
+      <a class="cart-link" routerLink="/cart" aria-label="Shopping cart">
+        <span aria-hidden="true">🛒</span>
+        <span>Cart</span>
+        @if (cartService.itemCount(); as count) {
+          <span class="cart-badge" [attr.aria-label]="count + ' items in cart'">{{ count }}</span>
+        }
+        </a>
+    }
     <app-account-menu />
   </nav>
 </header>
@@ -32,3 +41,10 @@
 <main class="page-shell">
   <router-outlet></router-outlet>
 </main>
+
+@if (notificationService.message(); as message) {
+  <div class="toast" role="status">
+    <span>{{ message }}</span>
+    <button type="button" aria-label="Dismiss notification" (click)="dismissNotification()">×</button>
+  </div>
+}

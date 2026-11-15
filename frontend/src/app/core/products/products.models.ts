@@ -14,6 +14,7 @@ export interface CategorySummary {
 
 export interface ProductListItem {
   id: number;
+  sku: string;
   nameAr: string;
   nameEn: string;
   price: number;
@@ -26,6 +27,7 @@ export interface ProductListItem {
 
 export interface ProductDetails {
   id: number;
+  sku: string;
   nameAr: string;
   nameEn: string;
   price: number;

@@ -1,0 +1,180 @@
+<section class="checkout-page" aria-labelledby="checkout-title">
+  <header class="page-heading">
+    <p class="eyebrow">Almost there</p>
+    <h1 id="checkout-title">Checkout</h1>
+    <p>Review your order and where it should be delivered.</p>
+  </header>
+
+  @if (isLoading()) {
+    <p class="page-state" role="status" aria-busy="true">Loading checkout…</p>
+  } @else if (loadError()) {
+    <div class="page-state error" role="alert">
+      <p>{{ loadError() }}</p>
+      <button type="button" class="secondary-button" (click)="retryLoad()">Try again</button>
+    </div>
+  } @else if (cart(); as currentCart) {
+    @if (currentCart.items.length === 0) {
+      <div class="page-state">
+        <p>Your cart is empty.</p>
+        <a routerLink="/" class="secondary-link">Continue shopping</a>
+      </div>
+    } @else {
+      <div class="checkout-layout">
+        <section class="panel order-summary" aria-labelledby="summary-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Your selection</p>
+              <h2 id="summary-title">Order summary</h2>
+            </div>
+            <a routerLink="/cart" class="edit-link">Edit cart</a>
+          </div>
+
+          @if (isCalculating()) {
+            <p class="inline-state" role="status">Updating totals…</p>
+          } @else if (calculation(); as currentCalculation) {
+            @for (item of currentCalculation.items ?? []; track item.productId) {
+              <article class="summary-item">
+                <div class="item-image">
+                  @if (item.primaryImageUrl) {
+                    <img [src]="item.primaryImageUrl" [alt]="item.itemNameEn" />
+                  } @else {
+                    <img src="/product-placeholder.svg" alt="" />
+                  }
+                </div>
+                <div class="item-copy">
+                  <h3>{{ item.itemNameEn }}</h3>
+                  <p>{{ item.quantity }} × {{ item.unitPrice | number: '1.0-2' }} EGP</p>
+                </div>
+                <strong>{{ item.lineTotal | number: '1.0-2' }} EGP</strong>
+                @if (itemErrors()[item.productId]; as itemError) {
+                  <p class="item-error" role="alert">{{ itemError }}</p>
+                }
+              </article>
+            }
+
+            @if (currentCalculation.governorateError) {
+              <p class="error" role="alert">{{ currentCalculation.governorateError }}</p>
+            }
+            <dl class="totals">
+              <div>
+                <dt>Subtotal</dt>
+                <dd>{{ currentCalculation.subtotal ?? currentCart.subtotal | number: '1.0-2' }} EGP</dd>
+              </div>
+              <div>
+                <dt>Shipping</dt>
+                <dd>
+                  @if (currentCalculation.shippingFee !== null) {
+                    {{ currentCalculation.shippingFee | number: '1.0-2' }} EGP
+                  } @else {
+                    Select a governorate
+                  }
+                </dd>
+              </div>
+              <div class="grand-total">
+                <dt>Total</dt>
+                <dd>
+                  @if (currentCalculation.total !== null) {
+                    {{ currentCalculation.total | number: '1.0-2' }} EGP
+                  } @else {
+                    —
+                  }
+                </dd>
+              </div>
+            </dl>
+          } @else {
+            <p class="inline-state">Select a governorate to calculate delivery and total.</p>
+          }
+        </section>
+
+        <section class="panel shipping-panel" aria-labelledby="shipping-title">
+          <p class="eyebrow">Delivery</p>
+          <h2 id="shipping-title">Shipping address</h2>
+          <form [formGroup]="form" (ngSubmit)="placeOrder()" novalidate>
+            <div class="form-grid">
+              <label>
+                Full name
+                <input type="text" formControlName="fullName" autocomplete="name" />
+                @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+                  <span class="field-error">{{ fieldErrors()['fullName'] || 'Enter your full name.' }}</span>
+                }
+              </label>
+              <label>
+                Phone
+                <input type="tel" formControlName="phone" autocomplete="tel" />
+                @if (form.controls.phone.touched && form.controls.phone.invalid) {
+                  <span class="field-error">{{ fieldErrors()['phone'] || 'Enter your phone number.' }}</span>
+                }
+              </label>
+              <label>
+                Governorate
+                <select formControlName="governorateId" (change)="onGovernorateChanged()">
+                  <option [ngValue]="0">Select governorate</option>
+                  @for (governorate of governorates(); track governorate.id) {
+                    <option [ngValue]="governorate.id">{{ governorate.name }}</option>
+                  }
+                </select>
+                @if (form.controls.governorateId.touched && form.controls.governorateId.invalid) {
+                  <span class="field-error">{{ fieldErrors()['governorateId'] || 'Choose a governorate.' }}</span>
+                }
+              </label>
+              <label>
+                City / area
+                <input type="text" formControlName="city" autocomplete="address-level2" />
+                @if (form.controls.city.touched && form.controls.city.invalid) {
+                  <span class="field-error">{{ fieldErrors()['city'] || 'Enter your city or area.' }}</span>
+                }
+              </label>
+              <label>
+                District
+                <input type="text" formControlName="district" />
+                @if (form.controls.district.touched && form.controls.district.invalid) {
+                  <span class="field-error">{{ fieldErrors()['district'] || 'Enter your district.' }}</span>
+                }
+              </label>
+              <label>
+                Street
+                <input type="text" formControlName="street" autocomplete="address-line1" />
+                @if (form.controls.street.touched && form.controls.street.invalid) {
+                  <span class="field-error">{{ fieldErrors()['street'] || 'Enter your street.' }}</span>
+                }
+              </label>
+              <label>
+                Building number
+                <input type="text" formControlName="buildingNumber" />
+                @if (form.controls.buildingNumber.touched && form.controls.buildingNumber.invalid) {
+                  <span class="field-error">{{ fieldErrors()['buildingNumber'] || 'Enter the building number.' }}</span>
+                }
+              </label>
+              <label>
+                Apartment / floor <span class="optional">(optional)</span>
+                <input type="text" formControlName="apartment" />
+                @if (fieldErrors()['apartment']) {
+                  <span class="field-error">{{ fieldErrors()['apartment'] }}</span>
+                }
+              </label>
+              <label class="full-width">
+                Delivery instructions <span class="optional">(optional)</span>
+                <textarea rows="3" formControlName="instructions"></textarea>
+                @if (fieldErrors()['instructions']) {
+                  <span class="field-error">{{ fieldErrors()['instructions'] }}</span>
+                }
+              </label>
+            </div>
+
+            @if (pageError()) {
+              <p class="error" role="alert">{{ pageError() }}</p>
+            }
+            <button
+              type="submit"
+              class="primary-button"
+              [disabled]="isSubmitting() || isCalculating() || calculation()?.isValid !== true || calculation()?.total === null"
+            >
+              {{ isSubmitting() ? 'Placing order…' : 'Buy / Create order' }}
+            </button>
+            <p class="cod-note">Cash on delivery. You’ll pay when your order arrives.</p>
+          </form>
+        </section>
+      </div>
+    }
+  }
+</section>
